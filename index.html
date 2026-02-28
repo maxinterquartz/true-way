@@ -198,6 +198,27 @@
             height: auto;
             display: block;
         }
+        .policy-link {
+            margin-top: 20px;
+            border-top: 1px dashed rgba(163, 198, 224, 0.3);
+            padding-top: 15px;
+        }
+        .footer-links {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: #a3c6e0;
+            text-decoration: none;
+            border-bottom: 1px dotted #a3c6e0;
+        }
+        .footer-links a:hover {
+            color: white;
+            border-bottom-color: white;
+        }
     </style>
 </head>
 <body>
@@ -239,21 +260,38 @@
         <!-- КНОПКА ЯНДЕКС КАСКО -->
         <a href="https://care.yandex.ru/maps-kasko" class="insure-btn" target="_blank">📄 Оформить КАСКО на одну поездку от Яндекс</a>
         
+        <!-- БЛОК КОНФИДЕНЦИАЛЬНОСТИ С ССЫЛКОЙ НА ПОЛИТИКУ -->
         <div class="privacy">
-            <p>🔒 Конфиденциальность</p>
+            <p>🔒 Конфиденциальность и безопасность</p>
             <p>• Работаем без базы данных</p>
             <p>• Логи переписки не ведутся</p>
             <p>• Заказ удаляется навсегда</p>
+            <p>• Ваши данные — только в памяти бота</p>
+            
+            <div class="policy-link">
+                📄 <strong>Полная версия:</strong> 
+                <a href="https://telegra.ph/Politika-ispolzovaniya-bota-sober-drivers-bot-v-Telegram-02-16" 
+                   target="_blank" 
+                   style="color: #a3c6e0; text-decoration: underline; text-underline-offset: 4px;">
+                   Политика использования бота
+                </a>
+            </div>
         </div>
         
+        <!-- ПОДВАЛ С ССЫЛКОЙ НА ПОЛИТИКУ -->
         <div class="footer">
             Истинный путь домой — трезвый путь<br>
             <strong>true-way.ru</strong> — 2026
             <div class="footer-email">
                 📧 <a href="mailto:sober-drivers-bot@yandex.ru">sober-drivers-bot@yandex.ru</a>
             </div>
-            <div class="hashtag">
-                #ТрезвыйВодитель
+            
+            <div class="footer-links">
+                <a href="https://telegra.ph/Politika-ispolzovaniya-bota-sober-drivers-bot-v-Telegram-02-16" 
+                   target="_blank">
+                   Политика конфиденциальности
+                </a>
+                <span>#ТрезвыйВодитель</span>
             </div>
         </div>
     </div>
