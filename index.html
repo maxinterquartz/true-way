@@ -12,7 +12,7 @@
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: #1e2b37;
+            background: linear-gradient(145deg, #1a2632 0%, #1e2f3d 100%);
             color: white;
             line-height: 1.5;
             min-height: 100vh;
@@ -22,60 +22,54 @@
             padding: 20px;
         }
         .card {
-            max-width: 700px;
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            padding: 40px 30px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
+            max-width: 750px;
+            background: rgba(10, 20, 30, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 50px 40px;
+            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.8);
+            border: 1px solid rgba(163, 198, 224, 0.2);
             text-align: center;
         }
         .domain {
-            font-size: 1.1rem;
-            letter-spacing: 3px;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
             color: #a3c6e0;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             text-transform: uppercase;
+            font-weight: 300;
         }
         h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 400;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            line-height: 1.2;
         }
         h1 span {
-            font-weight: 700;
+            font-weight: 800;
             color: #a3c6e0;
-            border-bottom: 2px solid rgba(255,255,255,0.2);
+            border-bottom: 3px solid rgba(163, 198, 224, 0.4);
             padding-bottom: 5px;
         }
         .sub {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             opacity: 0.9;
-            margin-bottom: 30px;
-            font-style: italic;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+        }
+        .service-desc {
+            font-size: 1.2rem;
             background: rgba(163, 198, 224, 0.1);
-            padding: 10px 20px;
-            border-radius: 50px;
+            padding: 16px 25px;
+            border-radius: 60px;
+            margin: 15px 0 25px;
+            border: 1px solid rgba(163, 198, 224, 0.3);
             display: inline-block;
+            backdrop-filter: blur(5px);
         }
-        .bot-badge {
-            background: #27A7E7;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 18px;
-            border-radius: 40px;
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 25px;
-            border: none;
-            color: white;
-        }
-        .bot-badge svg {
-            width: 18px;
-            height: 18px;
-            fill: white;
+        .service-desc strong {
+            color: #a3c6e0;
+            font-weight: 700;
         }
         .steps {
             display: flex;
@@ -86,27 +80,30 @@
         }
         .step {
             flex: 1 1 180px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
             padding: 20px;
-            border-radius: 16px;
-            border-left: 3px solid #a3c6e0;
+            border-radius: 20px;
+            border-left: 4px solid #a3c6e0;
+            backdrop-filter: blur(5px);
         }
         .step .num {
             font-size: 2rem;
             font-weight: 300;
             color: #a3c6e0;
             line-height: 1;
+            margin-bottom: 10px;
         }
         .privacy {
-            background: rgba(0,0,0,0.4);
-            padding: 20px;
-            border-radius: 16px;
+            background: rgba(0,0,0,0.5);
+            padding: 25px;
+            border-radius: 24px;
             margin: 30px 0;
-            font-size: 0.95rem;
+            font-size: 1rem;
             border: 1px dashed #a3c6e0;
+            backdrop-filter: blur(5px);
         }
         .privacy p {
-            margin: 5px 0;
+            margin: 8px 0;
         }
         .tg-button {
             display: inline-flex;
@@ -116,32 +113,42 @@
             background: #27A7E7;
             color: white;
             text-decoration: none;
-            padding: 18px 48px;
+            padding: 20px 50px;
             border-radius: 60px;
-            font-weight: 600;
-            font-size: 1.4rem;
-            margin: 20px 0 15px;
-            transition: 0.2s;
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin: 20px 0 10px;
+            transition: 0.3s;
             border: none;
             cursor: pointer;
             width: 100%;
-            box-shadow: 0 10px 20px -5px rgba(39, 167, 231, 0.3);
+            box-shadow: 0 15px 30px -8px rgba(39, 167, 231, 0.5);
+            letter-spacing: 1px;
         }
         .tg-button:hover {
             background: #1d8fd1;
-            transform: scale(1.02);
-            box-shadow: 0 15px 25px -5px rgba(39, 167, 231, 0.4);
+            transform: scale(1.02) translateY(-3px);
+            box-shadow: 0 20px 35px -5px rgba(39, 167, 231, 0.7);
         }
         .tg-button svg {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             fill: white;
         }
-        .tg-label {
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-bottom: 5px;
-            letter-spacing: 1px;
+        .tg-link-line {
+            margin: 5px 0 20px;
+            font-size: 1.1rem;
+        }
+        .tg-link-line a {
+            color: #a3c6e0;
+            text-decoration: none;
+            border-bottom: 2px dotted #a3c6e0;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .tg-link-line a:hover {
+            color: white;
+            border-bottom-color: white;
         }
         .insure-btn {
             display: inline-block;
@@ -149,30 +156,36 @@
             border: 2px solid #a3c6e0;
             color: #a3c6e0;
             text-decoration: none;
-            padding: 12px 32px;
-            border-radius: 40px;
-            font-weight: 500;
-            font-size: 1.1rem;
-            margin: 10px 0 30px;
-            transition: 0.2s;
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 15px 0 30px;
+            transition: 0.3s;
+            backdrop-filter: blur(5px);
         }
         .insure-btn:hover {
             background: #a3c6e0;
             color: #1e2b37;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px #a3c6e0;
         }
         .footer {
-            margin-top: 30px;
-            font-size: 0.9rem;
-            opacity: 0.6;
+            margin-top: 40px;
+            font-size: 1rem;
+            opacity: 0.7;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 25px;
         }
         a {
             color: #a3c6e0;
         }
         .photo-container {
             margin: 30px 0;
-            border-radius: 16px;
+            border-radius: 24px;
             overflow: hidden;
-            border: 2px solid rgba(163, 198, 224, 0.3);
+            border: 3px solid rgba(163, 198, 224, 0.3);
+            box-shadow: 0 20px 30px -10px black;
         }
         .photo-container img {
             width: 100%;
@@ -185,14 +198,13 @@
     <div class="card">
         <div class="domain">true-way.ru</div>
         <h1>Истинный <span>путь</span></h1>
-        <div class="sub">🚗 трезвый водитель 🔑 работает везде</div>
+        <div class="sub">🚗 трезвый водитель</div>
         
-        <div class="bot-badge">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.04-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.48.97-.74 3.82-1.66 6.36-2.76 7.62-3.29 3.63-1.53 4.38-1.8 4.87-1.81.11 0 .35.02.51.15.13.11.17.26.18.37.01.11.02.29-.01.44z"/></svg>
-            <span>Telegram Bot</span>
+        <div class="service-desc">
+            Услуга <strong>«трезвый водитель»</strong> — за рулём вашего автомобиля
         </div>
         
-        <!-- ФОТО (вставьте ссылку на изображение) -->
+        <!-- ФОТО -->
         <div class="photo-container">
             <img src="photo_5233366488985571976_c.jpg" alt="Трезвый водитель" onerror="this.style.display='none'">
         </div>
@@ -200,11 +212,11 @@
         <div class="steps">
             <div class="step">
                 <div class="num">1</div>
-                <strong>Заполните форму заказа</strong>
+                <strong>Заполните форму заказа</strong> в боте
             </div>
             <div class="step">
                 <div class="num">2</div>
-                <strong>Узнайте стоимость</strong> у водителей
+                <strong>Узнайте точную стоимость</strong> у водителей
             </div>
             <div class="step">
                 <div class="num">3</div>
@@ -212,18 +224,22 @@
             </div>
         </div>
         
-        <div class="tg-label">ЗАКАЗ ЧЕРЕЗ БОТА</div>
         <!-- КНОПКА ТЕЛЕГРАМ БОТА -->
         <a href="https://t.me/sober_drivers_bot?start" class="tg-button" target="_blank">
             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.04-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.48.97-.74 3.82-1.66 6.36-2.76 7.62-3.29 3.63-1.53 4.38-1.8 4.87-1.81.11 0 .35.02.51.15.13.11.17.26.18.37.01.11.02.29-.01.44z"/></svg>
             @sober_drivers_bot
         </a>
         
+        <!-- ССЫЛКА НА БОТА СТРОКОЙ НИЖЕ -->
+        <div class="tg-link-line">
+            🔗 <a href="https://t.me/sober_drivers_bot?start" target="_blank">https://t.me/sober_drivers_bot</a>
+        </div>
+        
         <!-- КНОПКА ЯНДЕКС КАСКО -->
-        <a href="https://care.yandex.ru/maps-kasko" class="insure-btn" target="_blank">📄 Оформить КАСКО на поездку от Яндекс</a>
+        <a href="https://care.yandex.ru/maps-kasko" class="insure-btn" target="_blank">📄 Оформить КАСКО на одну поездку от Яндекс</a>
         
         <div class="privacy">
-            <p>🔒 Конфиденциальность — наш приоритет</p>
+            <p>🔒 Конфиденциальность — абсолютный приоритет</p>
             <p>• Работаем без базы данных</p>
             <p>• Логи переписки не ведутся</p>
             <p>• Заказ удаляется навсегда</p>
@@ -231,7 +247,7 @@
         
         <div class="footer">
             Истинный путь домой — трезвый путь<br>
-            <a href="https://true-way.ru">true-way.ru</a> — 2026
+            <strong>true-way.ru</strong> — 2026
         </div>
     </div>
 </body>
