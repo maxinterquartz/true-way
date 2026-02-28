@@ -115,6 +115,23 @@
             background: #b8d6f0;
             transform: scale(1.02);
         }
+        .insure-btn {
+            display: inline-block;
+            background: transparent;
+            border: 2px solid #a3c6e0;
+            color: #a3c6e0;
+            text-decoration: none;
+            padding: 12px 32px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 1.1rem;
+            margin: 10px 0 30px;
+            transition: 0.2s;
+        }
+        .insure-btn:hover {
+            background: #a3c6e0;
+            color: #1e2b37;
+        }
         .footer {
             margin-top: 30px;
             font-size: 0.9rem;
@@ -123,32 +140,56 @@
         a {
             color: #a3c6e0;
         }
+        .photo-container {
+            margin: 30px 0;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(163, 198, 224, 0.3);
+        }
+        .photo-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="domain">true-way.ru</div>
         <h1>Истинный <span>путь</span></h1>
-        <div class="sub">трезвый водитель, которому можно доверять</div>
+        <div class="sub">🚗 трезвый водитель 🔑 работает везде</div>
         
         <div class="price-badge">⚡ Лучшая цена на рынке</div>
+        
+        <!-- ФОТО (вставьте ссылку на изображение) -->
+        <div class="photo-container">
+            <img src="photo_5233366488985571976_c.jpg" alt="Трезвый водитель" onerror="this.style.display='none'">
+        </div>
         
         <div class="steps">
             <div class="step">
                 <div class="num">1</div>
-                <strong>Заполните форму</strong> в Telegram-боте
+                <strong>Заполните форму заказа</strong>
             </div>
             <div class="step">
                 <div class="num">2</div>
-                <strong>Узнайте точную стоимость</strong> у водителей
+                <strong>Узнайте стоимость</strong> у водителей
             </div>
             <div class="step">
                 <div class="num">3</div>
-                <strong>Личный чат</strong> с водителем
+                <strong>Перейдите в личный чат</strong> с водителем
+            </div>
+            <div class="step">
+                <div class="num">4</div>
+                <strong>Оформите КАСКО</strong> на одну поездку
             </div>
         </div>
         
-        <a href="#" class="button">🚗 @sober_drivers_bot</a>
+        <!-- КНОПКА ТЕЛЕГРАМ БОТА -->
+        <a href="https://t.me/sober_drivers_bot?start" class="button" target="_blank">🚗 @sober_drivers_bot</a>
+        
+        <!-- КНОПКА ЯНДЕКС КАСКО -->
+        <a href="https://care.yandex.ru/maps-kasko" class="insure-btn" target="_blank">📄 Оформить КАСКО на поездку от Яндекс</a>
         
         <div class="privacy">
             <p>🔒 Конфиденциальность — наш приоритет</p>
