@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>True Way — Истинный путь трезвого водителя</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #1e2b37;
+            color: white;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            max-width: 700px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .domain {
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            color: #a3c6e0;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 400;
+            margin-bottom: 15px;
+        }
+        h1 span {
+            font-weight: 700;
+            color: #a3c6e0;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding-bottom: 5px;
+        }
+        .sub {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+        .price-badge {
+            background: #2a3b48;
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            border: 1px solid #a3c6e0;
+            color: #a3c6e0;
+        }
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 40px 0;
+            text-align: left;
+        }
+        .step {
+            flex: 1 1 180px;
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 3px solid #a3c6e0;
+        }
+        .step .num {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #a3c6e0;
+            line-height: 1;
+        }
+        .privacy {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 16px;
+            margin: 30px 0;
+            font-size: 0.95rem;
+            border: 1px dashed #a3c6e0;
+        }
+        .privacy p {
+            margin: 5px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #a3c6e0;
+            color: #1e2b37;
+            text-decoration: none;
+            padding: 16px 48px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1.3rem;
+            margin: 20px 0;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .button:hover {
+            background: #b8d6f0;
+            transform: scale(1.02);
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+        a {
+            color: #a3c6e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="domain">true-way.ru</div>
+        <h1>Истинный <span>путь</span></h1>
+        <div class="sub">трезвый водитель, которому можно доверять</div>
+        
+        <div class="price-badge">⚡ Лучшая цена на рынке</div>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="num">1</div>
+                <strong>Заполните форму</strong> в Telegram-боте
+            </div>
+            <div class="step">
+                <div class="num">2</div>
+                <strong>Узнайте точную стоимость</strong> у водителей
+            </div>
+            <div class="step">
+                <div class="num">3</div>
+                <strong>Личный чат</strong> с водителем
+            </div>
+        </div>
+        
+        <a href="#" class="button">🚗 @sober_drivers_bot</a>
+        
+        <div class="privacy">
+            <p>🔒 Конфиденциальность — наш приоритет</p>
+            <p>• Работаем без базы данных</p>
+            <p>• Логи переписки не ведутся</p>
+            <p>• Заказ удаляется навсегда</p>
+        </div>
+        
+        <div class="footer">
+            Истинный путь домой — трезвый путь<br>
+            <a href="https://true-way.ru">true-way.ru</a> — 2026
+        </div>
+    </div>
+</body>
+</html>
