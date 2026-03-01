@@ -2,471 +2,198 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <title>🔑 Трезвый водитель True Way | Вызвать водителя круглосуточно</title>
     
-    <!-- ОСНОВНЫЕ SEO-ТЕГИ -->
-    <title>🔑🚗 Трезвый водитель — работает везде | True Way</title>
-    <meta name="description" content="Услуга трезвый водитель: профессиональный водитель за руль вашего авто. Вызвать трезвого водителя недорого. Работаем круглосуточно. Без предоплаты. Ваш автомобиль в надежных руках.">
-    <meta name="keywords" content="трезвый водитель, услуга трезвый водитель, вызвать трезвого водителя, за руль трезвый водитель, трезвый водитель недорого, трезвый водитель круглосуточно, трезвый водитель на своем авто, трезвый водитель цена, услуги трезвого водителя, водитель за руль, трезвый водитель москва, трезвый водитель спб, заказ трезвого водителя">
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <!-- SEO & Meta -->
+    <meta name="description" content="Услуга трезвый водитель True Way: профессиональный водитель за руль вашего авто. Круглосуточно, без предоплаты, гарантия безопасности. Закажите прямо сейчас!">
+    <meta name="keywords" content="трезвый водитель, вызвать трезвого водителя, за руль трезвый водитель, трезвый водитель цена">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta name="robots" content="index, follow">
-    <meta name="author" content="True Way">
-    <meta name="language" content="Russian">
     
-    <!-- Open Graph для соцсетей -->
-    <meta property="og:title" content="🔑🚗 Трезвый водитель — работает везде">
-    <meta property="og:description" content="Профессиональный трезвый водитель за руль вашего автомобиля. Вызвать трезвого водителя быстро и недорого. Круглосуточно.">
+    <!-- Open Graph -->
+    <meta property="og:title" content="🔑 Трезвый водитель — работает везде | True Way">
+    <meta property="og:description" content="Профессиональный водитель за руль вашего авто. 24/7. Безопасно и надежно.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://true-way.ru">
-    <meta property="og:image" content="https://true-way.ru/photo_5233366488985571976_c.jpg">
-    <meta property="og:site_name" content="True Way — трезвый водитель">
+    <meta property="og:image" content="https://true-way.ru">
     
-    <!-- Фавикон -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    
+    <!-- Микроразметка Schema.org для Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "serviceType": "Трезвый водитель",
+      "provider": {
+        "@type": "LocalBusiness",
+        "name": "True Way",
+        "image": "https://true-way.ru"
+      },
+      "description": "Профессиональные услуги трезвого водителя круглосуточно.",
+      "areaServed": "Russia",
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "RUB"
+      }
+    }
+    </script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --accent: #a3c6e0;
+            --bg-gradient: linear-gradient(145deg, #1a2632 0%, #1e2f3d 100%);
+            --glass-bg: rgba(10, 20, 30, 0.75);
+            --glass-border: rgba(163, 198, 224, 0.2);
         }
-        
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: linear-gradient(145deg, #1a2632 0%, #1e2f3d 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
             color: white;
-            line-height: 1.5;
+            line-height: 1.6;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 12px;
+            padding: 15px;
         }
-        
+
         .card {
-            max-width: 750px;
+            max-width: 800px;
             width: 100%;
-            background: rgba(10, 20, 30, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: clamp(20px, 5vw, 32px);
-            padding: clamp(25px, 6vw, 50px) clamp(20px, 5vw, 40px);
-            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.8);
-            border: 1px solid rgba(163, 198, 224, 0.2);
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 30px;
+            padding: clamp(30px, 5vw, 60px);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+            border: 1px solid var(--glass-border);
             text-align: center;
         }
-        
+
         .domain {
-            font-size: clamp(0.9rem, 3.5vw, 1.2rem);
-            letter-spacing: 4px;
-            color: #a3c6e0;
-            margin-bottom: 15px;
+            font-size: 0.9rem;
+            letter-spacing: 5px;
+            color: var(--accent);
             text-transform: uppercase;
+            margin-bottom: 20px;
             font-weight: 300;
-            word-break: break-word;
         }
-        
+
         h1 {
-            font-size: clamp(2.2rem, 8vw, 3rem);
-            font-weight: 400;
-            margin-bottom: 5px;
-            line-height: 1.2;
+            font-size: clamp(2rem, 7vw, 3.5rem);
+            font-weight: 300;
+            margin-bottom: 25px;
         }
-        
+
         h1 span {
             font-weight: 800;
-            color: #a3c6e0;
-            border-bottom: 3px solid rgba(163, 198, 224, 0.4);
-            padding-bottom: 5px;
-        }
-        
-        .sub {
-            font-size: clamp(1.1rem, 4.5vw, 1.4rem);
-            opacity: 0.9;
-            margin-bottom: 20px;
-            color: #e0e0e0;
-            word-break: break-word;
-        }
-        
-        .service-desc {
-            font-size: clamp(1rem, 4vw, 1.2rem);
-            background: rgba(163, 198, 224, 0.1);
-            padding: 16px 20px;
-            border-radius: 60px;
-            margin: 15px 0 25px;
-            border: 1px solid rgba(163, 198, 224, 0.3);
+            color: var(--accent);
+            position: relative;
             display: inline-block;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            width: 100%;
-            max-width: 100%;
-            word-break: break-word;
         }
-        
-        .service-desc strong {
-            color: #a3c6e0;
-            font-weight: 700;
-        }
-        
-        .photo-figure {
-            margin: 30px 0;
+
+        h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
             width: 100%;
+            height: 4px;
+            background: var(--accent);
+            opacity: 0.3;
         }
-        
-        .photo-container {
-            width: 100%;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 3px solid rgba(163, 198, 224, 0.3);
-            box-shadow: 0 20px 30px -10px black;
-        }
-        
-        .photo-container img {
-            width: 100%;
-            height: auto;
+
+        .cta-button {
             display: block;
-        }
-        
-        .photo-caption {
-            margin-top: 12px;
-            font-size: 0.9rem;
-            color: #a3c6e0;
-            opacity: 0.8;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        
-        .sber-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            color: #a3c6e0;
+            background: var(--accent);
+            color: #1a2632;
             text-decoration: none;
-            border-bottom: 1px dotted #a3c6e0;
-        }
-        
-        .sber-link:hover {
-            color: white;
-            border-bottom-color: white;
-        }
-        
-        .sber-logo-small {
-            display: inline-block;
-            background: #21a038;
-            color: white;
-            width: 18px;
-            height: 18px;
-            border-radius: 4px;
-            font-size: 12px;
+            padding: 20px 40px;
+            border-radius: 50px;
             font-weight: 700;
-            line-height: 18px;
-            text-align: center;
-            margin-right: 2px;
+            font-size: 1.2rem;
+            margin: 30px auto;
+            transition: transform 0.3s, box-shadow 0.3s;
+            max-width: 320px;
         }
-        
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(163, 198, 224, 0.3);
+        }
+
+        .photo-container {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid var(--glass-border);
+            margin: 30px 0;
+        }
+
+        .photo-container img { width: 100%; display: block; }
+
         .steps {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin: 40px 0;
         }
-        
+
         .step {
-            flex: 1 1 min(180px, 100%);
-            min-width: 140px;
-            background: rgba(0,0,0,0.4);
-            padding: 15px 10px;
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
             border-radius: 20px;
-            border-left: 4px solid #a3c6e0;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            border-left: 4px solid var(--accent);
+            text-align: left;
         }
-        
-        .step-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-align: center;
-            width: 100%;
-        }
-        
-        .step .num {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #a3c6e0;
-            flex-shrink: 0;
-            line-height: 1.4;
-        }
-        
-        .step .text {
-            font-size: 1rem;
-            text-align: center;
-            flex: 0 1 auto;
-        }
-        
-        .step .text a {
-            color: white;
-            text-decoration: none;
-        }
-        
-        .step .text a:hover {
-            text-decoration: underline;
-            color: #a3c6e0;
-        }
-        
-        .kasco-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(252, 63, 29, 0.1);
-            padding: 4px 10px;
-            border-radius: 30px;
-            margin-top: 5px;
-            border: 1px solid rgba(252, 63, 29, 0.3);
-            transition: 0.2s;
-        }
-        
-        .kasco-link:hover {
-            background: rgba(252, 63, 29, 0.2);
-            border-color: #FC3F1D;
-        }
-        
-        .kasco-link .yandex-logo {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: #FC3F1D;
-            color: white;
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 14px;
-        }
-        
-        .privacy {
-            background: rgba(0,0,0,0.5);
-            padding: 25px 20px;
-            border-radius: 24px;
-            margin: 30px 0;
-            font-size: 1rem;
-            border: 1px dashed #a3c6e0;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-        }
-        
-        .privacy p {
-            margin: 8px 0;
-        }
-        
-        .tg-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            background: #27A7E7;
-            color: white;
-            text-decoration: none;
-            padding: 18px 20px;
-            border-radius: 60px;
-            font-weight: 700;
-            font-size: clamp(1.2rem, 5vw, 1.6rem);
-            margin: 20px 0 10px;
-            transition: 0.3s;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 15px 30px -8px rgba(39, 167, 231, 0.5);
-            letter-spacing: 1px;
-        }
-        
-        .tg-button:hover {
-            background: #1d8fd1;
-            transform: scale(1.02) translateY(-3px);
-            box-shadow: 0 20px 35px -5px rgba(39, 167, 231, 0.7);
-        }
-        
-        .tg-button svg {
-            width: clamp(24px, 6vw, 32px);
-            height: clamp(24px, 6vw, 32px);
-            fill: white;
-            flex-shrink: 0;
-        }
-        
-        .footer {
+
+        .step .num { color: var(--accent); font-weight: 900; margin-right: 10px; }
+
+        .footer-info {
+            font-size: 0.85rem;
+            opacity: 0.6;
             margin-top: 40px;
-            font-size: clamp(0.9rem, 3.5vw, 1rem);
-            opacity: 0.7;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 25px;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 20px;
         }
-        
-        .footer-email {
-            margin-top: 15px;
-            font-size: 1rem;
-            color: #a3c6e0;
-            word-break: break-all;
-        }
-        
-        .footer-email a {
-            color: #a3c6e0;
-            text-decoration: none;
-            border-bottom: 1px dotted #a3c6e0;
-            word-break: break-all;
-        }
-        
-        .hashtag {
-            margin-top: 15px;
-            font-size: 0.95rem;
-            color: #a3c6e0;
-            opacity: 0.8;
-            letter-spacing: 1px;
-        }
-        
-        .policy-link {
-            margin-top: 20px;
-            border-top: 1px dashed rgba(163, 198, 224, 0.3);
-            padding-top: 15px;
-            word-break: break-word;
-        }
-        
-        .policy-link a {
-            color: #a3c6e0;
-            text-decoration: underline;
-            text-underline-offset: 4px;
-            word-break: break-word;
-        }
-        
-        a {
-            color: #a3c6e0;
-        }
-        
+
         @media (max-width: 480px) {
-            .step-content {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .step .num {
-                margin-right: 0;
-            }
-        }
-        
-        @media (max-width: 380px) {
-            .step {
-                flex: 1 1 100%;
-            }
-            .tg-button {
-                padding: 16px 15px;
-                font-size: 1.1rem;
-            }
-        }
-        
-        @media (min-width: 768px) and (max-width: 1024px) {
-            .card {
-                padding: 40px 35px;
-            }
-            .step {
-                flex: 1 1 160px;
-            }
+            .card { padding: 25px 15px; }
+            .steps { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="domain">true-way.ru</div>
-        <h1>Истинный <span>путь</span></h1>
-        <div class="sub">🔑🚗 трезвый водитель · работает везде</div>
-        
-        <div class="service-desc">
-            Услуга трезвый водитель — за рулём вашего автомобиля
+
+<main class="card">
+    <div class="domain">True-Way.ru</div>
+    
+    <h1>Услуга <span>Трезвый водитель</span></h1>
+    
+    <p class="sub">Ваш автомобиль — в надежных руках профессионалов. Работаем 24/7.</p>
+
+    <a href="tel:+70000000000" class="cta-button">Вызвать водителя</a>
+
+    <div class="photo-container">
+        <img src="https://true-way.ru" alt="Трезвый водитель за рулем">
+    </div>
+
+    <div class="steps">
+        <div class="step">
+            <span class="num">01.</span> Звоните или пишите
         </div>
-        
-        <figure class="photo-figure">
-            <div class="photo-container">
-                <img src="photo_5233366488985571976_c.jpg" 
-                     alt="Трезвый водитель за рулем автомобиля — услуга трезвый водитель" 
-                     title="Трезвый водитель True Way"
-                     onerror="this.style.display='none'; this.parentElement.style.display='none';">
-            </div>
-            <figcaption class="photo-caption">
-                <span>🖼️ Аватар создан</span>
-                <a href="https://rudalle.ru" target="_blank" class="sber-link">
-                    <span class="sber-logo-small">С</span>
-                    ruDALL-E
-                </a>
-                <span>(ПАО Сбербанк)</span>
-            </figcaption>
-        </figure>
-        
-        <div class="steps">
-            <div class="step">
-                <div class="step-content">
-                    <span class="num">1</span>
-                    <div class="text">
-                        <a href="https://t.me/sober_drivers_bot?start" target="_blank">Заполните форму заказа</a>
-                    </div>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-content">
-                    <span class="num">2</span>
-                    <div class="text">Узнайте стоимость у водителей</div>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-content">
-                    <span class="num">3</span>
-                    <div class="text">Перейдите в личный чат с водителем</div>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-content">
-                    <span class="num">4</span>
-                    <div class="text">
-                        <span style="display: block; margin-bottom: 6px;">Оформите КАСКО на одну поездку</span>
-                        <a href="https://care.yandex.ru/maps-kasko" target="_blank" class="kasco-link">
-                            <span class="yandex-logo">Я</span>
-                            <span>Перейти на Яндекс КАСКО</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div class="step">
+            <span class="num">02.</span> Водитель прибывает за 15-30 мин
         </div>
-        
-        <a href="https://t.me/sober_drivers_bot?start" class="tg-button" target="_blank">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.04-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.48.97-.74 3.82-1.66 6.36-2.76 7.62-3.29 3.63-1.53 4.38-1.8 4.87-1.81.11 0 .35.02.51.15.13.11.17.26.18.37.01.11.02.29-.01.44z"/></svg>
-            @sober_drivers_bot
-        </a>
-        
-        <div class="privacy">
-            <p>🔒 Конфиденциальность</p>
-            <p>• Работаем без базы данных</p>
-            <p>• Логи переписки не ведутся</p>
-            <p>• Заказ удаляется навсегда</p>
-            
-            <div class="policy-link">
-                📄 <a href="https://telegra.ph/Politika-ispolzovaniya-bota-sober-drivers-bot-v-Telegram-02-16" 
-                   target="_blank">
-                   Политика использования
-                </a>
-            </div>
-        </div>
-        
-        <div class="footer">
-            Истинный путь — домой с трезвым водителем<br>
-            <strong>true-way.ru</strong> — 2026
-            <div class="footer-email">
-                📧 <a href="mailto:sober-drivers-bot@yandex.ru">sober-drivers-bot@yandex.ru</a>
-            </div>
-            <div class="hashtag">
-                #ТрезвыйВодитель
-            </div>
+        <div class="step">
+            <span class="num">03.</span> Безопасно едем домой
         </div>
     </div>
+
+    <div class="footer-info">
+        <p>© 2024 True Way. Конфиденциальность гарантирована. Услуга доступна для лиц старше 18 лет.</p>
+    </div>
+</main>
+
 </body>
 </html>
