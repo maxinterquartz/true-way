@@ -176,37 +176,49 @@
         }
         
         .step {
-            flex: 1 1 min(180px, 100%);
-            min-width: 140px;
+            flex: 1 1 calc(50% - 15px);
+            min-width: 200px;
             background: rgba(0,0,0,0.4);
-            padding: 15px 10px;
+            padding: 18px 12px;
             border-radius: 20px;
             border-left: 4px solid #a3c6e0;
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
         }
         
+        /* На очень маленьких экранах — по одному в ряд */
+        @media (max-width: 480px) {
+            .step {
+                flex: 1 1 100%;
+                min-width: 100%;
+            }
+        }
+        
         .step-content {
             display: flex;
+            flex-direction: row;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-align: center;
+            justify-content: flex-start;
+            gap: 12px;
+            text-align: left;
             width: 100%;
         }
         
         .step .num {
-            font-size: 1.3rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: #a3c6e0;
             flex-shrink: 0;
-            line-height: 1.4;
+            line-height: 1;
+            min-width: 28px;
+            text-align: center;
         }
         
         .step .text {
             font-size: 1rem;
-            text-align: center;
-            flex: 0 1 auto;
+            text-align: left;
+            flex: 1;
+            word-break: break-word;
         }
         
         .step .text a {
@@ -224,11 +236,12 @@
             align-items: center;
             gap: 6px;
             background: rgba(252, 63, 29, 0.1);
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 30px;
-            margin-top: 5px;
+            margin-top: 8px;
             border: 1px solid rgba(252, 63, 29, 0.3);
             transition: 0.2s;
+            font-size: 0.95rem;
         }
         
         .kasco-link:hover {
@@ -242,11 +255,11 @@
             justify-content: center;
             background: #FC3F1D;
             color: white;
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             border-radius: 6px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 12px;
         }
         
         .privacy {
@@ -346,19 +359,17 @@
             color: #a3c6e0;
         }
         
-        @media (max-width: 480px) {
+        /* Дополнительная страховка для очень маленьких */
+        @media (max-width: 380px) {
             .step-content {
-                flex-wrap: wrap;
-                justify-content: center;
+                gap: 8px;
             }
             .step .num {
-                margin-right: 0;
+                font-size: 1.4rem;
+                min-width: 24px;
             }
-        }
-        
-        @media (max-width: 380px) {
-            .step {
-                flex: 1 1 100%;
+            .step .text {
+                font-size: 0.95rem;
             }
             .tg-button {
                 padding: 16px 15px;
@@ -371,7 +382,7 @@
                 padding: 40px 35px;
             }
             .step {
-                flex: 1 1 160px;
+                flex: 1 1 calc(50% - 15px);
             }
         }
     </style>
@@ -415,7 +426,7 @@
             <div class="step">
                 <div class="step-content">
                     <span class="num">2</span>
-                    <div class="text">Выбирите лучшую цену</div>
+                    <div class="text">Выберите лучшую цену</div>
                 </div>
             </div>
             <div class="step">
