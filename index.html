@@ -2,20 +2,17 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- ВОЗВРАЩАЮ ТВОЙ ОРИГИНАЛЬНЫЙ ЗАГОЛОВОК -->
     <title>🔑🚗 Трезвый водитель — True Way</title>
     <meta name="description" content="Услуга трезвый водитель по всему миру. Мы садимся за руль вашего автомобиля, чтобы вы безопасно добрались домой. Заказ через Telegram-бота.">
     <meta name="keywords" content="трезвый водитель, за руль, услуга трезвый водитель, вызвать трезвого водителя, трезвый водитель на своём авто">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     
-    <!-- Open Graph для соцсетей -->
     <meta property="og:title" content="Трезвый водитель — True Way">
     <meta property="og:description" content="Истинный путь домой — трезвый путь. Услуга трезвый водитель на вашем автомобиле.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://true-way.ru">
     <meta property="og:image" content="https://true-way.ru/photo_5233366488985571976_c.jpg">
     
-    <!-- Фавикон -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     
     <style>
@@ -102,7 +99,6 @@
             font-weight: 700;
         }
         
-        /* Фото с подписью */
         .photo-figure {
             margin: 30px 0;
             width: 100%;
@@ -135,7 +131,6 @@
             flex-wrap: wrap;
             gap: 15px;
             margin: 40px 0;
-            text-align: left;
         }
         
         .step {
@@ -149,17 +144,64 @@
             -webkit-backdrop-filter: blur(5px);
         }
         
+        .step-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
         .step .num {
             font-size: 1.3rem;
             font-weight: 700;
             color: #a3c6e0;
-            display: inline;
-            margin-right: 8px;
+            flex-shrink: 0;
+            line-height: 1.4;
         }
         
-        .step strong {
+        .step .text {
             font-size: 1rem;
-            display: inline;
+            text-align: left;
+            flex: 1;
+        }
+        
+        .step .text a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .step .text a:hover {
+            text-decoration: underline;
+            color: #a3c6e0;
+        }
+        
+        .kasco-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(252, 63, 29, 0.1);
+            padding: 4px 10px;
+            border-radius: 30px;
+            margin-top: 5px;
+            border: 1px solid rgba(252, 63, 29, 0.3);
+            transition: 0.2s;
+        }
+        
+        .kasco-link:hover {
+            background: rgba(252, 63, 29, 0.2);
+            border-color: #FC3F1D;
+        }
+        
+        .kasco-link .yandex-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #FC3F1D;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
         }
         
         .privacy {
@@ -259,7 +301,13 @@
             color: #a3c6e0;
         }
         
-        /* Адаптация для очень маленьких экранов */
+        .sber-line {
+            display: block;
+            margin-top: 4px;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
         @media (max-width: 380px) {
             .step {
                 flex: 1 1 100%;
@@ -268,9 +316,13 @@
                 padding: 16px 15px;
                 font-size: 1.1rem;
             }
+            .step-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
         }
         
-        /* Адаптация для планшетов */
         @media (min-width: 768px) and (max-width: 1024px) {
             .card {
                 padding: 40px 35px;
@@ -288,10 +340,9 @@
         <div class="sub">🔑🚗 трезвый водитель</div>
         
         <div class="service-desc">
-            Услуга <strong>«трезвый водитель»</strong> — за рулём вашего автомобиля
+            Услуга трезвый водитель — за рулём вашего автомобиля
         </div>
         
-        <!-- ФОТО С ПОДПИСЬЮ (ТОЧНО КАК ТЫ ПРОСИЛ) -->
         <figure class="photo-figure">
             <div class="photo-container">
                 <img src="photo_5233366488985571976_c.jpg" 
@@ -299,32 +350,51 @@
                      onerror="this.style.display='none'; this.parentElement.style.display='none';">
             </div>
             <figcaption class="photo-caption">
-                Аватар создан ruDALL-E(ПАО Сбербанк)
+                Аватар создан ruDALL-E
+                <span class="sber-line">(ПАО Сбербанк)</span>
             </figcaption>
         </figure>
         
         <div class="steps">
             <div class="step">
-                <span class="num">1</span> <strong>Заполните форму заказа</strong>
+                <div class="step-content">
+                    <span class="num">1</span>
+                    <div class="text">
+                        <a href="https://t.me/sober_drivers_bot?start" target="_blank">Заполните форму заказа</a>
+                    </div>
+                </div>
             </div>
             <div class="step">
-                <span class="num">2</span> <strong>Узнайте стоимость у водителей</strong>
+                <div class="step-content">
+                    <span class="num">2</span>
+                    <div class="text">Узнайте стоимость у водителей</div>
+                </div>
             </div>
             <div class="step">
-                <span class="num">3</span> <strong>Перейдите в личный чат с водителем</strong>
+                <div class="step-content">
+                    <span class="num">3</span>
+                    <div class="text">Перейдите в личный чат с водителем</div>
+                </div>
             </div>
             <div class="step">
-                <span class="num">4</span> <strong><span style="display: inline-flex; align-items: center; gap: 4px; background: #FC3F1D; color: white; padding: 2px 8px; border-radius: 8px; font-size: 0.9rem; margin-right: 4px;">Я</span> оформите КАСКО на одну поездку</strong>
+                <div class="step-content">
+                    <span class="num">4</span>
+                    <div class="text">
+                        <span style="display: block; margin-bottom: 6px;">Оформите КАСКО на одну поездку</span>
+                        <a href="https://care.yandex.ru/maps-kasko" target="_blank" class="kasco-link">
+                            <span class="yandex-logo">Я</span>
+                            <span>Перейти на Яндекс КАСКО</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- КНОПКА ТЕЛЕГРАМ БОТА -->
         <a href="https://t.me/sober_drivers_bot?start" class="tg-button" target="_blank">
             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.04-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.48.97-.74 3.82-1.66 6.36-2.76 7.62-3.29 3.63-1.53 4.38-1.8 4.87-1.81.11 0 .35.02.51.15.13.11.17.26.18.37.01.11.02.29-.01.44z"/></svg>
             @sober_drivers_bot
         </a>
         
-        <!-- БЛОК КОНФИДЕНЦИАЛЬНОСТИ (БЕЗ "БЕЗОПАСНОСТЬ") -->
         <div class="privacy">
             <p>🔒 Конфиденциальность</p>
             <p>• Работаем без базы данных</p>
@@ -339,9 +409,8 @@
             </div>
         </div>
         
-        <!-- ПОДВАЛ -->
         <div class="footer">
-            Истинный путь домой — трезвый путь<br>
+            Истинный путь — домой с трезвым водителем<br>
             <strong>true-way.ru</strong> — 2026
             <div class="footer-email">
                 📧 <a href="mailto:sober-drivers-bot@yandex.ru">sober-drivers-bot@yandex.ru</a>
