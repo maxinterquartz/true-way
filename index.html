@@ -124,6 +124,39 @@
             color: #a3c6e0;
             opacity: 0.8;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .sber-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #a3c6e0;
+            text-decoration: none;
+            border-bottom: 1px dotted #a3c6e0;
+        }
+        
+        .sber-link:hover {
+            color: white;
+            border-bottom-color: white;
+        }
+        
+        .sber-logo-small {
+            display: inline-block;
+            background: #21a038;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 18px;
+            text-align: center;
+            margin-right: 2px;
         }
         
         .steps {
@@ -137,7 +170,7 @@
             flex: 1 1 min(180px, 100%);
             min-width: 140px;
             background: rgba(0,0,0,0.4);
-            padding: 15px 15px;
+            padding: 15px 10px;
             border-radius: 20px;
             border-left: 4px solid #a3c6e0;
             backdrop-filter: blur(5px);
@@ -146,8 +179,11 @@
         
         .step-content {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
+            justify-content: center;
             gap: 8px;
+            text-align: center;
+            width: 100%;
         }
         
         .step .num {
@@ -160,8 +196,8 @@
         
         .step .text {
             font-size: 1rem;
-            text-align: left;
-            flex: 1;
+            text-align: center;
+            flex: 0 1 auto;
         }
         
         .step .text a {
@@ -301,11 +337,14 @@
             color: #a3c6e0;
         }
         
-        .sber-line {
-            display: block;
-            margin-top: 4px;
-            font-size: 0.85rem;
-            opacity: 0.9;
+        @media (max-width: 480px) {
+            .step-content {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .step .num {
+                margin-right: 0;
+            }
         }
         
         @media (max-width: 380px) {
@@ -315,11 +354,6 @@
             .tg-button {
                 padding: 16px 15px;
                 font-size: 1.1rem;
-            }
-            .step-content {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
             }
         }
         
@@ -350,8 +384,12 @@
                      onerror="this.style.display='none'; this.parentElement.style.display='none';">
             </div>
             <figcaption class="photo-caption">
-                Аватар создан ruDALL-E
-                <span class="sber-line">(ПАО Сбербанк)</span>
+                <span>🖼️ Аватар создан</span>
+                <a href="https://rudalle.ru" target="_blank" class="sber-link">
+                    <span class="sber-logo-small">С</span>
+                    ruDALL-E
+                </a>
+                <span>(ПАО Сбербанк)</span>
             </figcaption>
         </figure>
         
