@@ -1,0 +1,10 @@
+node_modules
+.git
+.env
+*.log
+ssl
+*.backup
+*.bak
+.DS_Store
+README.md
+.gitignore
