@@ -1,0 +1,366 @@
+const REGIONS = [
+    'Москва', 'Санкт-Петербург', 'Казань', 'Екатеринбург',
+    'Новосибирск', 'Краснодар', 'Сочи', 'Владивосток',
+    'Ростов-на-Дону', 'Уфа', 'Красноярск', 'Пермь',
+    'Воронеж', 'Волгоград', 'Омск', 'Челябинск',
+    'Н. Новгород', 'Самара', 'Калининград'
+];
+
+const NAME_REGEX = /^[а-яА-ЯёЁ\s\-]{2,30}$/;
+const REGION_REGEX = /^[а-яА-ЯёЁ0-9\s\-.]+$/;
+
+let selectedRegion = null;
+let driverName = null;
+let currentOrderId = null;
+let ordersRefreshInterval = null;
+let driverId = null;
+
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return String(unsafe)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function restoreSession() {
+    const savedDriverId = localStorage.getItem('driverId');
+    if (savedDriverId) {
+        console.log('🔄 Восстанавливаем сессию водителя:', savedDriverId);
+    }
+}
+
+const sounds = {
+    button1: new Audio('/sounds/button-31.mp3'),
+    button2: new Audio('/sounds/button-32.mp3'),
+    button3: new Audio('/sounds/button-33a.mp3'),
+    button4: new Audio('/sounds/button-39.mp3'),
+    error: new Audio('/sounds/error.mp3'),
+    notification: new Audio('/sounds/notification.mp3')
+};
+
+Object.values(sounds).forEach(sound => {
+    sound.load();
+    sound.volume = 0.5;
+});
+
+let soundIndex = 0;
+const buttonSounds = ['button1', 'button2', 'button3', 'button4'];
+
+function playNextButtonSound() {
+    const soundName = buttonSounds[soundIndex % buttonSounds.length];
+    soundIndex++;
+    sounds[soundName]?.play().catch(() => {});
+}
+
+function playSound(name) {
+    sounds[name]?.play().catch(() => {});
+}
+
+function showStep(stepName) {
+    document.querySelectorAll(".step").forEach(step => {
+        step.classList.add("hidden");
+        step.classList.remove("active");
+    });
+    const targetStep = document.getElementById("step-" + stepName);
+    targetStep.classList.remove("hidden");
+    targetStep.classList.add("active");
+    playNextButtonSound();
+}
+
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => {
+        s.classList.add('hidden');
+    });
+    document.getElementById(screenId).classList.remove('hidden');
+    playNextButtonSound();
+}
+
+function validateName(name) {
+    return NAME_REGEX.test(name?.trim() || '');
+}
+
+function validateRegion(text) {
+    if (!text) return false;
+    const trimmed = text.trim();
+    if (REGIONS.includes(trimmed)) return true;
+    return REGION_REGEX.test(trimmed) && trimmed.length >= 2;
+}
+
+function renderRegionButtons() {
+    const container = document.getElementById('region-buttons');
+    container.innerHTML = '';
+    
+    REGIONS.forEach(region => {
+        const btn = document.createElement('button');
+        btn.textContent = region;
+        btn.onclick = () => {
+            playNextButtonSound();
+            selectedRegion = region;
+            showStep('name');
+        };
+        container.appendChild(btn);
+    });
+    
+    const customBtn = document.createElement('button');
+    customBtn.textContent = '➕ Своя локация';
+    customBtn.onclick = () => {
+        playNextButtonSound();
+        document.getElementById('custom-region-input').classList.remove('hidden');
+    };
+    container.appendChild(customBtn);
+}
+
+function submitCustomRegion() {
+    playNextButtonSound();
+    const custom = document.getElementById('customRegion').value.trim();
+    if (!custom || !validateRegion(custom)) {
+        playSound('error');
+        alert('Некорректное название города');
+        return;
+    }
+    selectedRegion = custom;
+    document.getElementById('custom-region-input').classList.add('hidden');
+    showStep('name');
+}
+
+function backToRegionList() {
+    playNextButtonSound();
+    document.getElementById('custom-region-input').classList.add('hidden');
+}
+
+function backTo(stepName) {
+    showStep(stepName);
+    playNextButtonSound();
+}
+
+function nextToConfirm() {
+    const name = document.getElementById('driverName').value.trim();
+    if (!validateName(name)) {
+        playSound('error');
+        alert('Некорректное имя');
+        return;
+    }
+    driverName = name;
+    document.getElementById('driver-preview').innerHTML = `
+        <p><strong>👤 Имя:</strong> ${escapeHtml(driverName)}</p>
+        <p><strong>🌍 Регион:</strong> ${escapeHtml(selectedRegion)}</p>
+    `;
+    showStep('confirm');
+}
+
+async function registerDriver() {
+    playNextButtonSound();
+    const registerBtn = document.querySelector('#step-confirm .btn-primary');
+    
+    await withButtonLock(registerBtn, '⏳ Регистрация...', async () => {
+        try {
+            const response = await safeFetch('/api/driver/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: driverName, region: selectedRegion })
+            }, 8000);
+            
+            const data = await handleResponse(response);
+            
+            driverId = data.driverId;
+            localStorage.setItem('driverId', driverId);
+            
+            playSound('notification');
+            
+            showScreen('screen-main');
+            document.getElementById('driver-info').innerHTML = `
+                👤 ${escapeHtml(driverName)} | 🌍 ${escapeHtml(selectedRegion)}<br>
+                <small>👥 Водителей: ${data.driversCount} (онлайн: ${data.onlineCount || 0})</small>
+            `;
+            loadOrders();
+            startOrdersAutoRefresh();
+            
+        } catch (error) {
+            console.error('Register error:', error);
+            playSound('error');
+            
+            if (error.message === 'timeout') {
+                alert('⏱ Сервер долго не отвечает. Попробуйте еще раз.');
+            } else if (error.message === 'server_busy') {
+                alert('🔄 Сервер временно перегружен. Попробуйте через пару секунд.');
+            } else {
+                alert('Ошибка: ' + error.message);
+            }
+        }
+    });
+}
+
+function startOrdersAutoRefresh() {
+    if (ordersRefreshInterval) clearInterval(ordersRefreshInterval);
+    ordersRefreshInterval = setInterval(() => {
+        if (document.getElementById('screen-main').classList.contains('active')) {
+            loadOrders();
+        }
+    }, 5000);
+}
+
+async function loadOrders() {
+    try {
+        const response = await fetch('/api/driver/orders');
+        const orders = await response.json();
+        
+        const container = document.getElementById('orders-list');
+        const now = Date.now();
+        
+        if (orders.length === 0) {
+            container.innerHTML = '<p style="text-align: center; margin: 30px;">📭 Нет активных заказов</p>';
+            return;
+        }
+        
+        let html = '<h3 style="margin: 20px 0;">📋 Доступные заказы:</h3>';
+        orders.sort((a, b) => b.createdAt - a.createdAt).forEach(order => {
+            const minutes = Math.floor((now - order.createdAt) / 60000);
+            const timeText = minutes < 1 ? 'только что' : `${minutes} мин назад`;
+            
+            let offerStatus = '';
+            if (order.hasOffer) {
+                offerStatus = '<span class="badge badge-success">✅ Вы откликнулись</span>';
+            }
+            
+            html += `
+                <div class="order-card">
+                    <p><strong>⏱ ${timeText} | ${escapeHtml(order.time)} ${offerStatus}</strong></p>
+                    <p>📍 ${escapeHtml(order.addressFrom)} → ${escapeHtml(order.addressTo)}</p>
+                    <p>🚗 ${escapeHtml(order.car)}</p>
+                    <button onclick="openOfferModal('${order.id}')" style="margin-top: 15px;">
+                        💰 Предложить цену
+                    </button>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } catch (error) {}
+}
+
+function openOfferModal(orderId) {
+    playNextButtonSound();
+    currentOrderId = orderId;
+    document.getElementById('offer-modal').style.display = 'flex';
+}
+
+function closeOfferModal() {
+    playNextButtonSound();
+    document.getElementById('offer-modal').style.display = 'none';
+    document.getElementById('offer-price').value = '';
+    document.getElementById('offer-phone').value = '';
+}
+
+async function submitOffer() {
+    const price = document.getElementById('offer-price').value;
+    const phone = document.getElementById('offer-phone').value;
+    const modal = document.getElementById('offer-modal');
+    const submitBtn = modal.querySelector('.btn-primary');
+
+    if (!price || !phone) {
+        playSound('error');
+        alert('Заполните все поля');
+        return;
+    }
+
+    await withButtonLock(submitBtn, '⏳ Отправка...', async () => {
+        try {
+            const response = await safeFetch('/api/offer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderId: currentOrderId,
+                    price: parseInt(price),
+                    phone: phone
+                })
+            }, 8000);
+
+            await handleResponse(response);
+
+            playSound('notification');
+            alert('✅ Предложение отправлено');
+            closeOfferModal();
+            loadOrders();
+
+        } catch (error) {
+            console.error('Offer error:', error);
+            playSound('error');
+
+            if (error.message === 'timeout') {
+                alert('⏱ Сервер долго не отвечает. Попробуйте еще раз.');
+            } else if (error.message === 'server_busy') {
+                alert('🔄 Сервер временно перегружен. Попробуйте через пару секунд.');
+            } else {
+                alert('Ошибка: ' + error.message);
+            }
+        }
+    });
+}
+
+async function forgetDriver() {
+    playNextButtonSound();
+    if (ordersRefreshInterval) clearInterval(ordersRefreshInterval);
+    if (confirm('Удалить все данные?')) {
+        await fetch('/api/driver/forget', { method: 'POST' });
+        localStorage.removeItem('driverId');
+        window.location.href = '/';
+    }
+}
+
+async function restoreDriverSession() {
+    restoreSession();
+    
+    try {
+        const response = await fetch('/api/driver/status');
+        const data = await response.json();
+        
+        if (data.registered) {
+            selectedRegion = data.driver.region;
+            driverName = data.driver.name;
+            driverId = data.driver.id;
+            localStorage.setItem('driverId', driverId);
+            
+            showScreen('screen-main');
+            document.getElementById('driver-info').innerHTML = `
+                👤 ${escapeHtml(driverName)} | 🌍 ${escapeHtml(selectedRegion)}<br>
+                <small>👥 Загрузка...</small>
+            `;
+            loadOrders();
+            startOrdersAutoRefresh();
+        }
+    } catch (error) {}
+}
+
+document.getElementById('driverName').addEventListener('input', function() {
+    const val = this.value.trim();
+    if (val && !validateName(val)) {
+        this.classList.add('error-field');
+        document.getElementById('name-error').classList.remove('hidden');
+    } else {
+        this.classList.remove('error-field');
+        document.getElementById('name-error').classList.add('hidden');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderRegionButtons();
+    restoreDriverSession();
+});
+
+const originalAlert = window.alert;
+window.alert = function(msg) {
+    if (msg.includes('✅') || msg.includes('успешно') || msg.includes('отправлено') || msg.includes('регистрация')) {
+        playSound('notification');
+    } else if (msg.includes('Ошибка') || msg.includes('error')) {
+        playSound('error');
+    } else {
+        playSound('notification');
+    }
+    originalAlert(msg);
+};
+
+window.addEventListener('beforeunload', () => {
+    if (ordersRefreshInterval) clearInterval(ordersRefreshInterval);
+});

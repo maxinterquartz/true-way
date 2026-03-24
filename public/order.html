@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>🔑🚗 Заказ трезвого водителя | True Way</title>
+    <meta name="description" content="Заказать трезвого водителя.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/order.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/favicon.ico" type="image/x-icon">
+  <meta name="theme-color" content="#27a7e7">
+</head>
+<body>
+    <div class="header-bar">
+        <div class="header-domain">
+            true-way.ru <span>| заказ</span>
+        </div>
+        <div class="header-links">
+            <a href="/">🏠 Главная</a>
+            <a href="/order" class="active">📝 Заказ</a>
+            <a href="/driver">👨 Водителям</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h1>🚘 <span>Заказ</span> услуги</h1>
+        
+        <div id="step-region" class="step active">
+            <h2>🌍 Выберите город</h2>
+            <div class="grid" id="region-buttons"></div>
+            <div id="custom-region-input" class="hidden">
+                <input type="text" id="customRegion" placeholder="Введите ваш город">
+                <button onclick="submitCustomRegion()" class="btn-primary">Далее</button>
+                <button onclick="backToRegionList()" class="btn-back">🔙 Назад</button>
+            </div>
+        </div>
+
+        <div id="step-time" class="step hidden">
+            <h2>⏱ Время подачи</h2>
+            <div class="grid" id="time-buttons"></div>
+            <button class="btn-back" onclick="backTo('region')">🔙 Назад</button>
+        </div>
+
+        <div id="step-address-from" class="step hidden">
+            <h2>📍 Откуда забрать?</h2>
+            <input type="text" id="addressFrom" placeholder="Адрес подачи">
+            <button onclick="nextToAddressTo()" class="btn-primary">Далее</button>
+            <button class="btn-back" onclick="backTo('time')">🔙 Назад</button>
+        </div>
+
+        <div id="step-address-to" class="step hidden">
+            <h2>🏁 Куда ехать?</h2>
+            <input type="text" id="addressTo" placeholder="Адрес назначения">
+            <button onclick="nextToCar()" class="btn-primary">Далее</button>
+            <button class="btn-back" onclick="backTo('address-from')">🔙 Назад</button>
+        </div>
+
+        <div id="step-car" class="step hidden">
+            <h2>🚗 Марка и номер</h2>
+            <input type="text" id="car" placeholder="KIA Rio 777">
+            <button onclick="previewOrder()" class="btn-primary">Далее</button>
+            <button class="btn-back" onclick="backTo('address-to')">🔙 Назад</button>
+        </div>
+
+        <div id="step-confirm" class="step hidden">
+            <h2>📋 Проверьте заказ</h2>
+            <div id="order-preview" class="order-summary"></div>
+            <button onclick="createOrder()" class="btn-primary">✅ Подтвердить</button>
+            <button class="btn-back" onclick="backTo('car')">🔙 Назад</button>
+        </div>
+
+        <div id="step-view-order" class="step hidden">
+            <h2>✅ Заказ создан</h2>
+            <div id="order-details" class="order-summary"></div>
+            <div id="offers-list"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="closeOrder()" class="btn-primary" style="flex: 1;">📋 Закрыть заказ</button>
+                <button onclick="cancelOrder()" class="btn-back" style="flex: 1;">❌ Отменить заказ</button>
+            </div>
+        </div>
+
+        <div class="driver-link">
+            <small>Работаете водителем?</small>
+            <a href="/driver">Я — трезвый водитель</a>
+        </div>
+
+        <div class="footer-mini">
+            <a href="/">Главная</a> • 
+            <a href="https://t.me/sober_drivers_bot" target="_blank">Telegram</a> • 
+            <a href="/driver">Водителям</a>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/order.js"></script>
+</body>
+</html>

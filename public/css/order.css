@@ -1,0 +1,17 @@
+/* Специфичные стили для страницы заказа */
+/* Основные стили наследуются из main.css */
+
+.offer-card {
+    transition: all 0.2s;
+}
+
+.offer-card:hover {
+    transform: translateX(4px);
+    border-left: 3px solid #a3c6e0;
+}
+
+@media (max-width: 600px) {
+    .offer-card {
+        text-align: center;
+    }
+}

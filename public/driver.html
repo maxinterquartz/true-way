@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>👨 Водитель | True Way</title>
+    <meta name="description" content="Страница для водителей. Принимайте заказы и зарабатывайте.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/driver.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/favicon.ico" type="image/x-icon">
+  <meta name="theme-color" content="#27a7e7">
+</head>
+<body>
+    <div class="header-bar">
+        <div class="header-domain">
+            true-way.ru <span>| водитель</span>
+        </div>
+        <div class="header-links">
+            <a href="/">🏠 Главная</a>
+            <a href="/order">📝 Заказ</a>
+            <a href="/driver" class="active">👨 Водителям</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h1>👨 <span>Водитель</span></h1>
+        
+        <div id="step-region" class="step active">
+            <h2>🌍 Выберите город</h2>
+            <div class="grid" id="region-buttons"></div>
+            <div id="custom-region-input" class="hidden">
+                <input type="text" id="customRegion" placeholder="Введите ваш город">
+                <button onclick="submitCustomRegion()" class="btn-primary">Далее</button>
+                <button onclick="backToRegionList()" class="btn-back">🔙 Назад</button>
+            </div>
+        </div>
+
+        <div id="step-name" class="step hidden">
+            <h2>📝 Ваше имя</h2>
+            <input type="text" id="driverName" placeholder="Введите имя">
+            <div id="name-error" class="error-message hidden">Только русские буквы, от 2 до 30 символов</div>
+            <button onclick="nextToConfirm()" class="btn-primary">Далее</button>
+            <button class="btn-back" onclick="backTo('region')">🔙 Назад</button>
+        </div>
+
+        <div id="step-confirm" class="step hidden">
+            <h2>📋 Проверьте данные</h2>
+            <div id="driver-preview" class="order-summary"></div>
+            <button onclick="registerDriver()" class="btn-primary">✅ Зарегистрироваться</button>
+            <button class="btn-back" onclick="backTo('name')">🔙 Назад</button>
+        </div>
+
+        <div id="screen-main" class="screen hidden">
+            <div id="driver-info" class="driver-info"></div>
+            <button onclick="loadOrders()" class="btn-primary">🔄 Обновить заказы</button>
+            <div id="orders-list" style="margin-top: 20px;"></div>
+            <div style="display: flex; gap: 10px; margin-top: 30px;">
+                <button onclick="forgetDriver()" class="btn-back">🗑 Забыть меня</button>
+                <button onclick="window.location.href='/'" class="btn-back">← На главную</button>
+            </div>
+        </div>
+        
+        <div class="footer-mini">
+            <a href="/">Главная</a> • 
+            <a href="/order">Заказ</a> • 
+            <a href="https://t.me/sober_drivers_bot" target="_blank">Telegram</a>
+        </div>
+    </div>
+
+    <div id="offer-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>💰 Предложить цену</h3>
+            <div id="offer-order-details"></div>
+            <input type="number" id="offer-price" placeholder="Сумма в рублях">
+            <input type="tel" id="offer-phone" placeholder="Ваш телефон">
+            <button onclick="submitOffer()" class="btn-primary">Отправить</button>
+            <button onclick="closeOfferModal()" class="btn-back">Отмена</button>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/driver.js"></script>
+</body>
+</html>

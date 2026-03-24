@@ -1,0 +1,433 @@
+const REGIONS = [
+    'Москва', 'Санкт-Петербург', 'Казань', 'Екатеринбург',
+    'Новосибирск', 'Краснодар', 'Сочи', 'Владивосток',
+    'Ростов-на-Дону', 'Уфа', 'Красноярск', 'Пермь',
+    'Воронеж', 'Волгоград', 'Омск', 'Челябинск',
+    'Н. Новгород', 'Самара', 'Калининград'
+];
+
+const TIME_OPTIONS = [
+    'через 30 мин', 'через 45 мин', 'через 1 час', 'через 1,5 часа',
+    'через 2 часа', 'через 3 часа', 'Вечером', 'Ночью', 'Утром', 'Днём'
+];
+
+const ADDRESS_REGEX = /^[а-яА-ЯёЁ0-9\s\-,\.\(\)]{3,100}$/;
+const CAR_REGEX = /^[а-яА-ЯёЁa-zA-Z0-9\s\-]{2,50}$/;
+
+let currentOrder = {
+    region: null,
+    time: null,
+    addressFrom: null,
+    addressTo: null,
+    car: null
+};
+
+let autoRefreshInterval;
+let lastOffersCount = 0;
+let currentOrderId = null;
+
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return String(unsafe)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function saveCurrentData() {
+    try {
+        const data = {
+            addressFrom: document.getElementById('addressFrom')?.value || '',
+            addressTo: document.getElementById('addressTo')?.value || '',
+            car: document.getElementById('car')?.value || ''
+        };
+        localStorage.setItem('lastOrderData', JSON.stringify(data));
+    } catch (e) {}
+}
+
+function loadSavedData() {
+    try {
+        const saved = localStorage.getItem('lastOrderData');
+        if (saved) {
+            const data = JSON.parse(saved);
+            if (data.addressFrom) document.getElementById('addressFrom').value = data.addressFrom;
+            if (data.addressTo) document.getElementById('addressTo').value = data.addressTo;
+            if (data.car) document.getElementById('car').value = data.car;
+        }
+    } catch (e) {}
+}
+
+const sounds = {
+    button1: new Audio('/sounds/button-31.mp3'),
+    button2: new Audio('/sounds/button-32.mp3'),
+    button3: new Audio('/sounds/button-33a.mp3'),
+    button4: new Audio('/sounds/button-39.mp3'),
+    error: new Audio('/sounds/error.mp3'),
+    notification: new Audio('/sounds/notification.mp3')
+};
+
+Object.values(sounds).forEach(sound => {
+    sound.load();
+    sound.volume = 0.5;
+});
+
+let soundIndex = 0;
+const buttonSounds = ['button1', 'button2', 'button3', 'button4'];
+
+function playNextButtonSound() {
+    const soundName = buttonSounds[soundIndex % buttonSounds.length];
+    soundIndex++;
+    sounds[soundName]?.play().catch(() => {});
+}
+
+function playSound(name) {
+    sounds[name]?.play().catch(() => {});
+}
+
+function showStep(stepName) {
+    document.querySelectorAll(".step").forEach(step => {
+        step.classList.add("hidden");
+        step.classList.remove("active");
+    });
+    const targetStep = document.getElementById("step-" + stepName);
+    targetStep.classList.remove("hidden");
+    targetStep.classList.add("active");
+    playNextButtonSound();
+}
+
+function backTo(stepName) {
+    showStep(stepName);
+    playNextButtonSound();
+}
+
+function validateAddress(text) {
+    return ADDRESS_REGEX.test(text?.trim() || '');
+}
+
+function validateCar(text) {
+    return CAR_REGEX.test(text?.trim() || '');
+}
+
+function renderRegionButtons() {
+    const container = document.getElementById('region-buttons');
+    container.innerHTML = '';
+    
+    REGIONS.forEach(region => {
+        const btn = document.createElement('button');
+        btn.textContent = region;
+        btn.onclick = () => {
+            playNextButtonSound();
+            currentOrder.region = region;
+            showStep('time');
+        };
+        container.appendChild(btn);
+    });
+    
+    const customBtn = document.createElement('button');
+    customBtn.textContent = '➕ Своя локация';
+    customBtn.onclick = () => {
+        playNextButtonSound();
+        document.getElementById('custom-region-input').classList.remove('hidden');
+    };
+    container.appendChild(customBtn);
+}
+
+function renderTimeButtons() {
+    const container = document.getElementById('time-buttons');
+    container.innerHTML = '';
+    
+    TIME_OPTIONS.forEach(time => {
+        const btn = document.createElement('button');
+        btn.textContent = time;
+        btn.onclick = () => {
+            playNextButtonSound();
+            currentOrder.time = time;
+            showStep('address-from');
+        };
+        container.appendChild(btn);
+    });
+}
+
+function submitCustomRegion() {
+    playNextButtonSound();
+    const custom = document.getElementById('customRegion').value.trim();
+    if (!custom || !ADDRESS_REGEX.test(custom)) {
+        playSound('error');
+        alert('Некорректное название города');
+        return;
+    }
+    currentOrder.region = custom;
+    document.getElementById('custom-region-input').classList.add('hidden');
+    showStep('time');
+}
+
+function backToRegionList() {
+    playNextButtonSound();
+    document.getElementById('custom-region-input').classList.add('hidden');
+}
+
+function nextToAddressTo() {
+    playNextButtonSound();
+    const val = document.getElementById('addressFrom').value.trim();
+    if (!validateAddress(val)) {
+        playSound('error');
+        alert('Некорректный адрес');
+        return;
+    }
+    currentOrder.addressFrom = val;
+    saveCurrentData();
+    showStep('address-to');
+}
+
+function nextToCar() {
+    playNextButtonSound();
+    const val = document.getElementById('addressTo').value.trim();
+    if (!validateAddress(val)) {
+        playSound('error');
+        alert('Некорректный адрес');
+        return;
+    }
+    currentOrder.addressTo = val;
+    saveCurrentData();
+    showStep('car');
+}
+
+function previewOrder() {
+    const car = document.getElementById('car').value.trim();
+    if (!validateCar(car)) {
+        playSound('error');
+        alert('Некорректная марка авто');
+        return;
+    }
+    
+    currentOrder.car = car;
+    saveCurrentData();
+    
+    document.getElementById('order-preview').innerHTML = `
+        <p><strong>🌍 Город:</strong> ${escapeHtml(currentOrder.region)}</p>
+        <p><strong>⏱ Время:</strong> ${escapeHtml(currentOrder.time)}</p>
+        <p><strong>📍 Откуда:</strong> ${escapeHtml(currentOrder.addressFrom)}</p>
+        <p><strong>🏁 Куда:</strong> ${escapeHtml(currentOrder.addressTo)}</p>
+        <p><strong>🚗 Авто:</strong> ${escapeHtml(currentOrder.car)}</p>
+    `;
+    showStep('confirm');
+}
+
+async function createOrder() {
+    const confirmBtn = document.querySelector('#step-confirm .btn-primary');
+
+    await withButtonLock(confirmBtn, '⏳ Создание заказа...', async () => {
+        try {
+            const response = await safeFetch('/api/order/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(currentOrder)
+            }, 8000);
+
+            const data = await handleResponse(response);
+
+            playSound('notification');
+            
+            localStorage.setItem('lastOrderId', data.orderId);
+            localStorage.removeItem('lastOrderData');
+            currentOrderId = data.orderId;
+
+            showStep('view-order');
+            loadOrderDetails(data.orderId);
+
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => {
+                loadOrderDetails(data.orderId);
+            }, 3000);
+
+        } catch (error) {
+            console.error('Create order error:', error);
+            playSound('error');
+
+            if (error.message === 'timeout') {
+                alert('⏱ Сервер долго не отвечает. Попробуйте еще раз.');
+            } else if (error.message === 'server_busy') {
+                alert('🔄 Слишком много заказов. Сервер временно занят. Попробуйте через минуту.');
+            } else {
+                alert('Ошибка при создании заказа: ' + error.message);
+            }
+        }
+    });
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+async function loadOrderDetails(orderId) {
+    try {
+        const response = await fetch('/api/order/' + orderId);
+        const order = await response.json();
+        
+        document.getElementById('order-details').innerHTML = `
+            <p><strong>🌍 Город:</strong> ${escapeHtml(order.region)}</p>
+            <p><strong>⏱ Время:</strong> ${escapeHtml(order.time)}</p>
+            <p><strong>📍 Откуда:</strong> ${escapeHtml(order.addressFrom)}</p>
+            <p><strong>🏁 Куда:</strong> ${escapeHtml(order.addressTo)}</p>
+            <p><strong>🚗 Авто:</strong> ${escapeHtml(order.car)}</p>
+        `;
+        
+        const currentOffersCount = order.offers ? order.offers.length : 0;
+        
+        if (currentOffersCount !== lastOffersCount) {
+            if (order.offers && order.offers.length > 0) {
+                let offersHtml = '<h3 style="margin: 20px 0 10px;">📃 Предложения:</h3>';
+                order.offers.sort((a, b) => b.createdAt - a.createdAt).forEach(offer => {
+                    const timeStr = new Date(offer.createdAt).toLocaleTimeString();
+                    offersHtml += `
+                        <div class="offer-card">
+                            <div class="offer-info">
+                                <strong>👤 ${escapeHtml(offer.driverName)}</strong>
+                                <small>${timeStr}</small>
+                            </div>
+                            <div class="offer-price">💰 ${offer.price} руб.</div>
+                            <div class="offer-phone">
+                                📞 <a href="tel:${escapeHtml(offer.phone)}">${escapeHtml(offer.phone)}</a>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('offers-list').innerHTML = offersHtml;
+            } else {
+                document.getElementById('offers-list').innerHTML = '<p style="text-align: center; margin: 20px;">💰 Пока нет предложений</p>';
+            }
+            lastOffersCount = currentOffersCount;
+        }
+    } catch (error) {}
+}
+
+async function restoreOrder() {
+    const savedOrderId = localStorage.getItem('lastOrderId');
+    if (!savedOrderId) return;
+    
+    try {
+        const response = await fetch('/api/order/' + savedOrderId);
+        if (response.ok) {
+            const order = await response.json();
+            if (order.status === 'active') {
+                currentOrderId = savedOrderId;
+                showStep('view-order');
+                loadOrderDetails(savedOrderId);
+                if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+                autoRefreshInterval = setInterval(() => {
+                    loadOrderDetails(savedOrderId);
+                }, 3000);
+            } else {
+                localStorage.removeItem('lastOrderId');
+            }
+        } else {
+            localStorage.removeItem('lastOrderId');
+        }
+    } catch (error) {}
+}
+
+async function closeOrder() {
+    const closeBtn = document.querySelector('#step-view-order .btn-primary');
+
+    if (!confirm('Закрыть заказ? Это действие нельзя отменить.')) return;
+
+    await withButtonLock(closeBtn, '⏳ Закрытие...', async () => {
+        stopAutoRefresh();
+
+        try {
+            const response = await safeFetch('/api/order/' + currentOrderId + '/close', {
+                method: 'POST'
+            }, 8000);
+
+            await handleResponse(response);
+
+            playSound('notification');
+            
+            localStorage.removeItem('lastOrderId');
+            currentOrderId = null;
+            currentOrder = { region: null, time: null, addressFrom: null, addressTo: null, car: null };
+            showStep('region');
+
+        } catch (error) {
+            console.error('Close order error:', error);
+            playSound('error');
+            
+            if (error.message === 'timeout') {
+                alert('⏱ Сервер долго не отвечает. Попробуйте еще раз.');
+            } else if (error.message === 'server_busy') {
+                alert('🔄 Сервер временно занят. Попробуйте через пару секунд.');
+            } else {
+                alert('Ошибка при закрытии заказа: ' + error.message);
+            }
+        }
+    });
+}
+
+async function cancelOrder() {
+    const cancelBtn = document.querySelector('#step-view-order .btn-back');
+
+    if (!confirm('Отменить заказ?')) return;
+
+    await withButtonLock(cancelBtn, '⏳ Отмена...', async () => {
+        stopAutoRefresh();
+
+        try {
+            const response = await safeFetch('/api/order/' + currentOrderId + '/cancel', {
+                method: 'POST'
+            }, 8000);
+
+            await handleResponse(response);
+
+            playSound('notification');
+            
+            localStorage.removeItem('lastOrderId');
+            currentOrderId = null;
+            currentOrder = { region: null, time: null, addressFrom: null, addressTo: null, car: null };
+            showStep('region');
+
+        } catch (error) {
+            console.error('Cancel order error:', error);
+            playSound('error');
+            
+            if (error.message === 'timeout') {
+                alert('⏱ Сервер долго не отвечает. Попробуйте еще раз.');
+            } else if (error.message === 'server_busy') {
+                alert('🔄 Сервер временно занят. Попробуйте через пару секунд.');
+            } else {
+                alert('Ошибка при отмене заказа: ' + error.message);
+            }
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderRegionButtons();
+    renderTimeButtons();
+    loadSavedData();
+    restoreOrder();
+    
+    ['addressFrom', 'addressTo', 'car'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', saveCurrentData);
+    });
+});
+
+const originalAlert = window.alert;
+window.alert = function(msg) {
+    if (msg.includes('✅') || msg.includes('успешно') || msg.includes('создан') || msg.includes('отправлено')) {
+        playSound('notification');
+    } else if (msg.includes('Ошибка') || msg.includes('error')) {
+        playSound('error');
+    } else {
+        playSound('notification');
+    }
+    originalAlert(msg);
+};
+
+window.addEventListener('beforeunload', () => {
+    stopAutoRefresh();
+});

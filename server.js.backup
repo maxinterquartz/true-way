@@ -1,0 +1,580 @@
+require('dotenv').config();
+const express = require('express');
+const session = require('cookie-session');
+const path = require('path');
+const webpush = require('web-push');
+const https = require('https');
+const fs = require('fs');
+const http = require('http');
+const rateLimit = require('express-rate-limit');
+
+// Проверка обязательных переменных окружения
+const requiredEnvVars = [
+    'SESSION_SECRET',
+    'VAPID_PUBLIC_KEY',
+    'VAPID_PRIVATE_KEY'
+];
+
+requiredEnvVars.forEach(varName => {
+    if (!process.env[varName]) {
+        console.error(`❌ CRITICAL: ${varName} not set in .env`);
+        process.exit(1);
+    }
+});
+
+const app = express();
+const PORT = process.env.PORT || 8080;
+
+// Хранилище данных в памяти
+const drivers = {};
+const orders = {};
+
+// Список регионов
+const REGIONS = [
+    'Москва', 'Санкт-Петербург', 'Казань', 'Екатеринбург',
+    'Новосибирск', 'Краснодар', 'Сочи', 'Владивосток',
+    'Ростов-на-Дону', 'Уфа', 'Красноярск', 'Пермь',
+    'Воронеж', 'Волгоград', 'Омск', 'Челябинск',
+    'Н. Новгород', 'Самара', 'Калининград'
+];
+
+// Константы
+const ORDER_TTL = 15 * 60 * 1000; // 15 минут
+
+// Регулярные выражения для валидации
+const NAME_REGEX = /^[а-яА-ЯёЁ\s\-]{2,30}$/;
+const REGION_REGEX = /^[а-яА-ЯёЁ0-9\s\-.]+$/;
+const ADDRESS_REGEX = /^[а-яА-ЯёЁ0-9\s\-,\.\(\)]{3,100}$/;
+const CAR_REGEX = /^[а-яА-ЯёЁa-zA-Z0-9\s\-]{2,50}$/;
+const PHONE_REGEX = /^\+?[0-9]{10,15}$/;
+
+// Настройка VAPID для push-уведомлений
+webpush.setVapidDetails(
+    `mailto:${process.env.ADMIN_EMAIL || 'admin@true-way.ru'}`,
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+);
+
+console.log('📧 Admin Email:', process.env.ADMIN_EMAIL || 'admin@true-way.ru');
+console.log('🔑 VAPID ключи загружены из .env');
+
+// Rate limiting
+const createOrderLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 10,
+    message: { error: 'Слишком много попыток, попробуйте позже' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+const registerLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 5,
+    message: { error: 'Слишком много попыток регистрации' }
+});
+
+// Middleware
+app.use(express.json());
+
+// Логирование медленных запросов
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        if (duration > 1000) {
+            console.log(`⚠️ Медленный запрос: ${req.method} ${req.url} - ${duration}ms`);
+        }
+    });
+    next();
+});
+
+app.use(express.static('public'));
+app.use(session({
+    name: 'session',
+    keys: [process.env.SESSION_SECRET],
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+}));
+
+// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+
+// Экранирование HTML для защиты от XSS
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .replace(/\//g, '&#x2F;');
+}
+
+function sanitizeInput(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str.trim();
+}
+
+function generateId() {
+    return Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+function validateDriverName(name) {
+    return NAME_REGEX.test((name || '').trim());
+}
+
+function validateRegion(text) {
+    if (!text || typeof text !== 'string') return false;
+    const trimmed = text.trim();
+    if (REGIONS.includes(trimmed)) return true;
+    return REGION_REGEX.test(trimmed) && trimmed.length >= 2 && trimmed.length <= 50;
+}
+
+function validateAddress(text) {
+    if (!text || typeof text !== 'string') return false;
+    return ADDRESS_REGEX.test(text.trim());
+}
+
+function validateCar(text) {
+    if (!text || typeof text !== 'string') return false;
+    return CAR_REGEX.test(text.trim());
+}
+
+function validatePrice(price) {
+    const priceStr = String(price || '').trim();
+    if (!/^\d+$/.test(priceStr)) return false;
+    const priceNum = parseInt(priceStr);
+    return priceNum >= 1000 && priceNum <= 1000000;
+}
+
+function validatePhone(phone) {
+    return PHONE_REGEX.test((phone || '').trim());
+}
+
+function countDriversInRegion(region) {
+    return Object.values(drivers).filter(d => d.region === region).length;
+}
+
+// Подсчет онлайн водителей (активны последние 5 минут)
+function countOnlineDriversInRegion(region) {
+    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+    return Object.values(drivers).filter(d => 
+        d.region === region && 
+        d.lastSeen && 
+        d.lastSeen > fiveMinutesAgo
+    ).length;
+}
+
+// ========== API: ПРОВЕРКА СЕРВЕРА (ПИНГ) ==========
+
+app.get('/api/ping', (req, res) => {
+    res.json({ 
+        ok: true, 
+        timestamp: Date.now(),
+        drivers: Object.keys(drivers).length,
+        orders: Object.keys(orders).length
+    });
+});
+
+// ========== API: ВОДИТЕЛЬ ==========
+
+app.post('/api/driver/register', registerLimiter, (req, res) => {
+    const { name, region } = req.body;
+    
+    if (!validateDriverName(name)) {
+        return res.status(400).json({ error: 'Имя должно быть на русском, от 2 до 30 символов' });
+    }
+    
+    if (!validateRegion(region)) {
+        return res.status(400).json({ error: 'Некорректный регион' });
+    }
+    
+    const existingDriver = Object.values(drivers).find(
+        d => d.sessionId === req.session.id
+    );
+    
+    let driverId;
+    
+    if (existingDriver) {
+        driverId = existingDriver.id;
+        existingDriver.name = sanitizeInput(name);
+        existingDriver.region = sanitizeInput(region);
+        existingDriver.lastSeen = Date.now();
+        console.log(`🔄 Водитель ${driverId} обновлён: ${name}, ${region}`);
+    } else {
+        driverId = 'driver_' + generateId();
+        drivers[driverId] = {
+            id: driverId,
+            name: sanitizeInput(name),
+            region: sanitizeInput(region),
+            sessionId: req.session.id,
+            createdAt: Date.now(),
+            lastSeen: Date.now(),
+            pushSubscription: null
+        };
+        console.log(`✅ Новый водитель ${driverId}: ${name}, ${region}`);
+    }
+    
+    req.session.driverId = driverId;
+   
+    
+    res.json({ 
+        ok: true, 
+        driverId,
+        driversCount: countDriversInRegion(region),
+        onlineCount: countOnlineDriversInRegion(region)
+    });
+});
+
+app.get('/api/driver/status', (req, res) => {
+    const driver = Object.values(drivers).find(
+        d => d.sessionId === req.session.id
+    );
+    
+    if (driver) {
+        driver.lastSeen = Date.now();
+        res.json({ 
+            registered: true,
+            driver: {
+                id: driver.id,
+                name: escapeHtml(driver.name),
+                region: escapeHtml(driver.region)
+            }
+        });
+    } else {
+        res.json({ registered: false });
+    }
+});
+
+app.get('/api/driver/orders', (req, res) => {
+    const driver = Object.values(drivers).find(
+        d => d.sessionId === req.session.id
+    );
+    
+    if (!driver) {
+        return res.status(401).json({ error: 'Водитель не авторизован' });
+    }
+    
+    driver.lastSeen = Date.now();
+    
+    const activeOrders = Object.values(orders).filter(
+        o => o.region === driver.region && o.status === 'active'
+    );
+    
+    res.json(activeOrders.map(o => ({
+        id: o.id,
+        time: o.time,
+        addressFrom: escapeHtml(o.addressFrom),
+        addressTo: escapeHtml(o.addressTo),
+        car: escapeHtml(o.car),
+        createdAt: o.createdAt,
+        hasOffer: o.offers.some(offer => offer.driverId === driver.id)
+    })));
+});
+
+app.post('/api/driver/forget', (req, res) => {
+    const driver = Object.values(drivers).find(
+        d => d.sessionId === req.session.id
+    );
+    
+    if (driver) {
+        Object.values(orders).forEach(order => {
+            if (order.offers) {
+                order.offers = order.offers.filter(offer => offer.driverId !== driver.id);
+            }
+        });
+        delete drivers[driver.id];
+        console.log(`🗑 Водитель ${driver.name} удалён`);
+    }
+    
+    req.session.driverId = null;
+    res.json({ ok: true });
+});
+
+// ========== API: ЗАКАЗЫ ==========
+
+app.post('/api/order/create', createOrderLimiter, (req, res) => {
+    const { region, time, addressFrom, addressTo, car } = req.body;
+    
+    if (!validateRegion(region)) {
+        return res.status(400).json({ error: 'Некорректный регион' });
+    }
+    if (!validateAddress(addressFrom)) {
+        return res.status(400).json({ error: 'Некорректный адрес подачи' });
+    }
+    if (!validateAddress(addressTo)) {
+        return res.status(400).json({ error: 'Некорректный адрес назначения' });
+    }
+    if (!validateCar(car)) {
+        return res.status(400).json({ error: 'Некорректная марка авто' });
+    }
+    
+    const sessionId = req.session.id;
+    
+    // Ограничение: не больше 3 активных заказов
+    const userActiveOrders = Object.values(orders).filter(
+        order => order.sessionId === sessionId && order.status === 'active'
+    ).length;
+    
+    if (userActiveOrders >= 3) {
+        return res.status(400).json({ error: 'Слишком много активных заказов (максимум 3)' });
+    }
+    
+    const orderId = 'order_' + generateId();
+    
+    orders[orderId] = {
+        id: orderId,
+        sessionId: sessionId,
+        region: sanitizeInput(region),
+        time: sanitizeInput(time),
+        addressFrom: sanitizeInput(addressFrom),
+        addressTo: sanitizeInput(addressTo),
+        car: sanitizeInput(car),
+        createdAt: Date.now(),
+        status: 'active',
+        offers: []
+    };
+    
+    req.session.lastOrderId = orderId;
+    
+    
+    // Отправляем push-уведомления водителям
+    const driversInRegion = Object.values(drivers).filter(
+        d => d.region === region && d.pushSubscription
+    );
+    
+    const notificationPayload = JSON.stringify({
+        title: '💰 Новый заказ!',
+        body: `${addressFrom} → ${addressTo}`,
+        url: `/driver`,
+        timestamp: Date.now()
+    });
+    
+    driversInRegion.forEach(driver => {
+        if (driver.pushSubscription) {
+            webpush.sendNotification(driver.pushSubscription, notificationPayload)
+                .catch(err => {
+                    if (err.statusCode === 410) {
+                        driver.pushSubscription = null;
+                    }
+                });
+        }
+    });
+    
+    res.json({ 
+        ok: true, 
+        orderId,
+        message: 'Заказ создан',
+        driversCount: countDriversInRegion(region),
+        onlineCount: countOnlineDriversInRegion(region)
+    });
+});
+
+app.get('/api/order/:id', (req, res) => {
+    const order = orders[req.params.id];
+    if (!order) {
+        return res.status(404).json({ error: 'Заказ не найден' });
+    }
+    
+    if (order.sessionId === req.session.id) {
+        res.json({
+            id: order.id,
+            region: escapeHtml(order.region),
+            time: escapeHtml(order.time),
+            addressFrom: escapeHtml(order.addressFrom),
+            addressTo: escapeHtml(order.addressTo),
+            car: escapeHtml(order.car),
+            status: order.status,
+            createdAt: order.createdAt,
+            offers: order.offers.map(o => ({
+                driverName: escapeHtml(o.driverName),
+                phone: o.phone,
+                price: o.price,
+                createdAt: o.createdAt
+            }))
+        });
+        return;
+    }
+    
+    res.json({
+        id: order.id,
+        region: escapeHtml(order.region),
+        time: escapeHtml(order.time),
+        addressFrom: escapeHtml(order.addressFrom),
+        addressTo: escapeHtml(order.addressTo),
+        car: escapeHtml(order.car),
+        status: order.status
+    });
+});
+
+app.post('/api/order/:id/close', (req, res) => {
+    const order = orders[req.params.id];
+    if (!order || order.sessionId !== req.session.id) {
+        return res.status(404).json({ error: 'Заказ не найден' });
+    }
+    
+    delete orders[req.params.id];
+    console.log(`✅ Заказ ${req.params.id} закрыт и удалён`);
+    res.json({ ok: true });
+});
+
+app.post('/api/order/:id/cancel', (req, res) => {
+    const order = orders[req.params.id];
+    if (!order || order.sessionId !== req.session.id) {
+        return res.status(404).json({ error: 'Заказ не найден' });
+    }
+    
+    delete orders[req.params.id];
+    console.log(`❌ Заказ ${req.params.id} отменён`);
+    res.json({ ok: true });
+});
+
+// ========== API: ПРЕДЛОЖЕНИЯ ==========
+
+app.post('/api/offer', (req, res) => {
+    const { orderId, price, phone } = req.body;
+    
+    const driver = Object.values(drivers).find(
+        d => d.sessionId === req.session.id
+    );
+    
+    if (!driver) {
+        return res.status(401).json({ error: 'Водитель не авторизован' });
+    }
+    
+    if (!validatePrice(price)) {
+        return res.status(400).json({ error: 'Цена от 1000 до 1000000' });
+    }
+    
+    if (!validatePhone(phone)) {
+        return res.status(400).json({ error: 'Некорректный номер телефона' });
+    }
+    
+    const order = orders[orderId];
+    if (!order || order.status !== 'active') {
+        return res.status(404).json({ error: 'Заказ не найден или неактивен' });
+    }
+    
+    if (driver.region !== order.region) {
+        return res.status(400).json({ error: 'Не ваш регион' });
+    }
+    
+    // Удаляем старое предложение этого водителя (если было)
+    const existingIndex = order.offers.findIndex(o => o.driverId === driver.id);
+    if (existingIndex !== -1) {
+        order.offers.splice(existingIndex, 1);
+    }
+    
+    order.offers.push({
+        driverId: driver.id,
+        driverName: driver.name,
+        phone: sanitizeInput(phone),
+        price: parseInt(price),
+        createdAt: Date.now()
+    });
+    
+    console.log(`💰 Водитель ${driver.name} предложил ${price} руб. за заказ ${orderId}`);
+    res.json({ ok: true });
+});
+
+// ========== API: PUSH-УВЕДОМЛЕНИЯ ==========
+
+app.post('/api/push/subscribe', (req, res) => {
+    const driver = Object.values(drivers).find(
+        d => d.sessionId === req.session.id
+    );
+    
+    if (!driver) {
+        return res.status(401).json({ error: 'Водитель не авторизован' });
+    }
+    
+    driver.pushSubscription = req.body.subscription;
+    console.log(`✅ Водитель ${driver.name} подписался на уведомления`);
+    
+    res.json({ ok: true });
+});
+
+app.get('/api/push/vapid-key', (req, res) => {
+    res.send(process.env.VAPID_PUBLIC_KEY);
+});
+
+// ========== ОЧИСТКА СТАРЫХ ЗАКАЗОВ ==========
+
+setInterval(() => {
+    const now = Date.now();
+    const expired = now - ORDER_TTL;
+    
+    Object.keys(orders).forEach(orderId => {
+        if (orders[orderId].createdAt < expired) {
+            delete orders[orderId];
+        }
+    });
+}, 5 * 60 * 1000);
+
+// Очистка мёртвых push-подписок (раз в час)
+setInterval(() => {
+    console.log('🧹 Проверка push-подписок...');
+    Object.values(drivers).forEach(driver => {
+        if (driver.pushSubscription) {
+            webpush.sendNotification(driver.pushSubscription, JSON.stringify({
+                title: '🫀 Ping',
+                body: 'Проверка подписки',
+                timestamp: Date.now()
+            })).catch(err => {
+                if (err.statusCode === 410) {
+                    console.log(`🗑 Удаляем мёртвую подписку водителя ${driver.id}`);
+                    driver.pushSubscription = null;
+                }
+            });
+        }
+    });
+}, 60 * 60 * 1000);
+
+// ========== СТРАНИЦЫ ==========
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/order', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'order.html'));
+});
+
+app.get('/driver', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'driver.html'));
+});
+
+// ========== ЗАПУСК СЕРВЕРА ==========
+
+const HOST = '0.0.0.0';
+
+try {
+    if (fs.existsSync('ssl/key.pem') && fs.existsSync('ssl/cert.pem')) {
+        const options = {
+            key: fs.readFileSync('ssl/key.pem'),
+            cert: fs.readFileSync('ssl/cert.pem')
+        };
+        https.createServer(options, app).listen(PORT, HOST, () => {
+            console.log(`✅ HTTPS сервер запущен на порту ${PORT}`);
+            console.log(`🌍 Локально: https://localhost:${PORT}/`);
+        });
+    } else {
+        app.listen(PORT, HOST, () => {
+            console.log(`✅ HTTP сервер запущен на порту ${PORT}`);
+            console.log(`🌍 Локально: http://localhost:${PORT}/`);
+        });
+    }
+} catch (err) {
+    console.log('SSL сертификаты не найдены, запускаем HTTP...');
+    app.listen(PORT, HOST, () => {
+        console.log(`✅ HTTP сервер запущен на порту ${PORT}`);
+        console.log(`🌍 Локально: http://localhost:${PORT}/`);
+    });
+}
+
+process.on('SIGTERM', () => {
+    console.log('SIGTERM signal received: closing server');
+    process.exit(0);
+});

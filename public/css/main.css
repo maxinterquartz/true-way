@@ -1,0 +1,469 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    background: linear-gradient(145deg, #1a2632 0%, #1e2f3d 100%);
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 16px;
+}
+
+/* Шапка */
+.header-bar {
+    max-width: 750px;
+    margin: 0 auto 20px;
+    background: rgba(10, 20, 30, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 60px;
+    padding: 10px 20px;
+    border: 1px solid rgba(163, 198, 224, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.header-domain {
+    color: #a3c6e0;
+    font-size: 0.9rem;
+}
+
+.header-domain span {
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.header-links {
+    display: flex;
+    gap: 12px;
+}
+
+.header-links a {
+    color: #a3c6e0;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 6px 12px;
+    border-radius: 30px;
+    transition: 0.2s;
+}
+
+.header-links a:hover {
+    background: rgba(163, 198, 224, 0.1);
+}
+
+.header-links a.active {
+    background: rgba(163, 198, 224, 0.2);
+    color: #ffffff;
+}
+
+/* Карточка */
+.card {
+    max-width: 750px;
+    width: 100%;
+    margin: 0 auto;
+    background: rgba(10, 20, 30, 0.6);
+    backdrop-filter: blur(12px);
+    border-radius: 32px;
+    padding: 32px 28px;
+    border: 1px solid rgba(163, 198, 224, 0.2);
+}
+
+/* Заголовки */
+h1 {
+    font-size: 2rem;
+    font-weight: 500;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+h1 span {
+    font-weight: 700;
+    color: #a3c6e0;
+    border-bottom: 2px solid #a3c6e0;
+    padding-bottom: 4px;
+}
+
+h2 {
+    color: #a3c6e0;
+    margin: 20px 0 16px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+h3 {
+    color: #a3c6e0;
+    margin: 16px 0 12px;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+/* Сетка */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+}
+
+/* Кнопки */
+.btn-primary, .btn-back {
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 60px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-primary {
+    background: rgba(39, 167, 231, 0.2);
+    border: 1px solid #27a7e7;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: rgba(39, 167, 231, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn-back {
+    background: transparent;
+    border: 1px solid rgba(163, 198, 224, 0.3);
+    color: #ffffff;
+}
+
+.btn-back:hover {
+    background: rgba(163, 198, 224, 0.1);
+    border-color: #a3c6e0;
+    transform: translateY(-1px);
+}
+
+button:disabled, .btn-primary:disabled, .btn-back:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Поля ввода */
+input {
+    width: 100%;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: 1px solid rgba(163, 198, 224, 0.3);
+    border-radius: 60px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: none;
+    border-color: #a3c6e0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.error-field {
+    border-color: #ff6b6b !important;
+    background: rgba(255, 107, 107, 0.1) !important;
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin: 4px 0 8px 16px;
+}
+
+/* Шаги и экраны */
+.step, .screen {
+    display: none;
+}
+
+.step.active, .screen.active {
+    display: block;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Карточки */
+.order-summary, .driver-info, .order-card {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 20px;
+    margin: 16px 0;
+    border-left: 3px solid #a3c6e0;
+}
+
+.order-summary p, .order-card p {
+    margin: 8px 0;
+}
+
+.driver-info {
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+/* Карточки предложений */
+.offer-card {
+    background: rgba(163, 198, 224, 0.1);
+    padding: 16px 20px;
+    border-radius: 20px;
+    margin: 12px 0;
+    border: 1px solid rgba(163, 198, 224, 0.2);
+    transition: all 0.2s;
+}
+
+.offer-card:hover {
+    transform: translateX(4px);
+    border-left: 3px solid #a3c6e0;
+}
+
+.offer-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.offer-price {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #a3c6e0;
+    margin: 8px 0;
+}
+
+.offer-phone a {
+    color: #ffffff;
+    text-decoration: none;
+    border-bottom: 1px dotted #a3c6e0;
+}
+
+.offer-phone a:hover {
+    border-bottom: 1px solid #a3c6e0;
+}
+
+/* Бейджи */
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.badge-success {
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid #4caf50;
+    color: #4caf50;
+}
+
+/* Модальное окно */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: rgba(10, 20, 30, 0.95);
+    padding: 28px;
+    border-radius: 28px;
+    max-width: 450px;
+    width: 100%;
+    border: 1px solid #a3c6e0;
+}
+
+.modal-content h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Ссылка для водителей */
+.driver-link {
+    text-align: center;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(163, 198, 224, 0.2);
+}
+
+.driver-link small {
+    display: block;
+    color: rgba(163, 198, 224, 0.6);
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+}
+
+.driver-link a {
+    color: #a3c6e0;
+    text-decoration: none;
+    border-bottom: 1px dotted #a3c6e0;
+}
+
+.driver-link a:hover {
+    border-bottom: 1px solid #a3c6e0;
+}
+
+/* Подвал */
+.footer-mini {
+    margin-top: 28px;
+    text-align: center;
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+.footer-mini a {
+    color: #a3c6e0;
+    text-decoration: none;
+    margin: 0 8px;
+}
+
+.footer-mini a:hover {
+    text-decoration: underline;
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+    body {
+        padding: 12px;
+    }
+    
+    .card {
+        padding: 24px 20px;
+    }
+    
+    h1 {
+        font-size: 1.6rem;
+    }
+    
+    h2 {
+        font-size: 1.3rem;
+    }
+    
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-bar {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .offer-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .offer-card {
+        text-align: center;
+    }
+}
+
+/* Стили для всех кнопок (включая созданные динамически) */
+button {
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 60px;
+    background: rgba(163, 198, 224, 0.1);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid rgba(163, 198, 224, 0.3);
+    transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+    background: rgba(163, 198, 224, 0.2);
+    transform: translateY(-1px);
+    border-color: #a3c6e0;
+}
+
+button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Кросс-браузерные исправления */
+@supports (backdrop-filter: blur(12px)) {
+    .card, .header-bar, .modal-content {
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+    }
+}
+
+/* Firefox autofill fix */
+/* Autofill fix - Standard */
+input:autofill {
+    filter: none;
+    -webkit-text-fill-color: #ffffff !important;
+    box-shadow: 0 0 0px 1000px rgba(0, 0, 0, 0.5) inset !important;
+}
+
+/* Chrome/Safari fix */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ffffff !important;
+    -webkit-box-shadow: 0 0 0px 1000px rgba(0, 0, 0, 0.5) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+/* Унификация скроллбаров */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(163, 198, 224, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(163, 198, 224, 0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(163, 198, 224, 0.5);
+}
+
+/* Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(163, 198, 224, 0.3) rgba(163, 198, 224, 0.1);
+}
+
+/* Отключаем blur в модальном окне для быстродействия */
+.modal {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
