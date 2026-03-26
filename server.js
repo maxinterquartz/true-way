@@ -78,10 +78,10 @@ app.use(express.json());
 
 // ========== УЛУЧШЕНИЕ 1: КЭШИРОВАНИЕ СТАТИКИ ==========
 app.use(express.static('public', {
-    maxAge: '1d',           // Кэшировать на 1 день
-    etag: true,             // Использовать ETag для валидации
-    lastModified: true,     // Использовать Last-Modified
-    immutable: true         // Для CSS/JS файлов - они не меняются
+    maxAge: '1d',
+    etag: true,
+    lastModified: true,
+    immutable: true
 }));
 
 // Логирование медленных запросов
@@ -222,7 +222,11 @@ app.get('/health', (req, res) => {
 // ========== API: ВОДИТЕЛЬ ==========
 
 app.post('/api/driver/register', registerLimiter, (req, res) => {
-    const { name, region } = req.body;
+    const { name, region, deviceId } = req.body;
+    
+    if (!deviceId) {
+        return res.status(400).json({ error: 'deviceId обязателен' });
+    }
     
     if (!validateDriverName(name)) {
         return res.status(400).json({ error: 'Имя должно быть на русском, от 2 до 30 символов' });
@@ -237,45 +241,46 @@ app.post('/api/driver/register', registerLimiter, (req, res) => {
         return res.status(503).json({ error: 'Сервер перегружен, попробуйте позже' });
     }
     
-    const existingDriver = Object.values(drivers).find(
-        d => d.sessionId === req.session.id
-    );
+    // Ищем водителя по deviceId (вместо sessionId)
+    let driver = Object.values(drivers).find(d => d.deviceId === deviceId);
     
-    let driverId;
-    
-    if (existingDriver) {
-        driverId = existingDriver.id;
-        existingDriver.name = sanitizeInput(name);
-        existingDriver.region = sanitizeInput(region);
-        existingDriver.lastSeen = Date.now();
-        console.log(`🔄 Водитель ${driverId} обновлён: ${name}, ${region}`);
+    if (driver) {
+        // Обновляем существующего
+        driver.name = sanitizeInput(name);
+        driver.region = sanitizeInput(region);
+        driver.lastSeen = Date.now();
+        console.log(`🔄 Водитель ${driver.id} обновлён: ${name}, ${region}, deviceId: ${deviceId}`);
     } else {
-        driverId = 'driver_' + generateId();
+        // Создаём нового
+        const driverId = 'driver_' + generateId();
         drivers[driverId] = {
             id: driverId,
             name: sanitizeInput(name),
             region: sanitizeInput(region),
-            sessionId: req.session.id,
+            deviceId: deviceId,
             createdAt: Date.now(),
             lastSeen: Date.now()
         };
-        console.log(`✅ Новый водитель ${driverId}: ${name}, ${region}`);
+        driver = drivers[driverId];
+        console.log(`✅ Новый водитель ${driverId}: ${name}, ${region}, deviceId: ${deviceId}`);
     }
-    
-    req.session.driverId = driverId;
     
     res.json({ 
         ok: true, 
-        driverId,
+        driverId: driver.id,
         driversCount: countDriversInRegion(region),
         onlineCount: countOnlineDriversInRegion(region)
     });
 });
 
 app.get('/api/driver/status', (req, res) => {
-    const driver = Object.values(drivers).find(
-        d => d.sessionId === req.session.id
-    );
+    const { deviceId } = req.query;
+    
+    if (!deviceId) {
+        return res.json({ registered: false });
+    }
+    
+    const driver = Object.values(drivers).find(d => d.deviceId === deviceId);
     
     if (driver) {
         driver.lastSeen = Date.now();
@@ -293,9 +298,13 @@ app.get('/api/driver/status', (req, res) => {
 });
 
 app.get('/api/driver/orders', (req, res) => {
-    const driver = Object.values(drivers).find(
-        d => d.sessionId === req.session.id
-    );
+    const { deviceId } = req.query;
+    
+    if (!deviceId) {
+        return res.status(401).json({ error: 'Водитель не авторизован' });
+    }
+    
+    const driver = Object.values(drivers).find(d => d.deviceId === deviceId);
     
     if (!driver) {
         return res.status(401).json({ error: 'Водитель не авторизован' });
@@ -319,9 +328,13 @@ app.get('/api/driver/orders', (req, res) => {
 });
 
 app.post('/api/driver/forget', (req, res) => {
-    const driver = Object.values(drivers).find(
-        d => d.sessionId === req.session.id
-    );
+    const { deviceId } = req.body;
+    
+    if (!deviceId) {
+        return res.status(400).json({ error: 'deviceId обязателен' });
+    }
+    
+    const driver = Object.values(drivers).find(d => d.deviceId === deviceId);
     
     if (driver) {
         Object.values(orders).forEach(order => {
@@ -330,10 +343,9 @@ app.post('/api/driver/forget', (req, res) => {
             }
         });
         delete drivers[driver.id];
-        console.log(`🗑 Водитель ${driver.name} удалён`);
+        console.log(`🗑 Водитель ${driver.name} удалён (deviceId: ${deviceId})`);
     }
     
-    req.session.driverId = null;
     res.json({ ok: true });
 });
 
@@ -458,11 +470,13 @@ app.post('/api/order/:id/cancel', (req, res) => {
 // ========== API: ПРЕДЛОЖЕНИЯ ==========
 
 app.post('/api/offer', (req, res) => {
-    const { orderId, price, phone } = req.body;
+    const { orderId, price, phone, deviceId } = req.body;
     
-    const driver = Object.values(drivers).find(
-        d => d.sessionId === req.session.id
-    );
+    if (!deviceId) {
+        return res.status(401).json({ error: 'Водитель не авторизован' });
+    }
+    
+    const driver = Object.values(drivers).find(d => d.deviceId === deviceId);
     
     if (!driver) {
         return res.status(401).json({ error: 'Водитель не авторизован' });
@@ -509,9 +523,13 @@ app.post('/api/offer', (req, res) => {
 
 // ========== API: PUSH ПОДПИСКА ==========
 app.post('/api/subscribe', (req, res) => {
-    const { subscription, region } = req.body;
+    const { subscription, region, deviceId } = req.body;
     
-    const driver = Object.values(drivers).find(d => d.sessionId === req.session.id);
+    if (!deviceId) {
+        return res.status(401).json({ error: 'Водитель не авторизован' });
+    }
+    
+    const driver = Object.values(drivers).find(d => d.deviceId === deviceId);
     
     if (!driver) {
         return res.status(401).json({ error: 'Водитель не авторизован' });
@@ -523,7 +541,7 @@ app.post('/api/subscribe', (req, res) => {
         createdAt: Date.now()
     };
     
-    console.log(`🔔 Водитель ${driver.name} подписался на уведомления`);
+    console.log(`🔔 Водитель ${driver.name} подписался на уведомления (deviceId: ${deviceId})`);
     res.json({ ok: true });
 });
 

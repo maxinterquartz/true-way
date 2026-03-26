@@ -25,6 +25,17 @@ function escapeHtml(unsafe) {
         .replace(/'/g, '&#039;');
 }
 
+// Генерация или получение уникального ID устройства
+function getDeviceId() {
+    let deviceId = localStorage.getItem('deviceId');
+    if (!deviceId) {
+        deviceId = 'device_' + crypto.randomUUID();
+        localStorage.setItem('deviceId', deviceId);
+        console.log('🆕 Новый deviceId:', deviceId);
+    }
+    return deviceId;
+}
+
 function showStep(stepName) {
     document.querySelectorAll(".step").forEach(step => {
         step.classList.add("hidden");
@@ -121,13 +132,18 @@ function nextToConfirm() {
 
 async function registerDriver() {
     const registerBtn = document.querySelector('#step-confirm .btn-primary');
+    const deviceId = getDeviceId();
     
     await withButtonLock(registerBtn, '⏳ Регистрация...', async () => {
         try {
             const response = await safeFetch('/api/driver/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: driverName, region: selectedRegion })
+                body: JSON.stringify({ 
+                    name: driverName, 
+                    region: selectedRegion,
+                    deviceId: deviceId
+                })
             }, 8000);
             
             const data = await handleResponse(response);
@@ -136,7 +152,7 @@ async function registerDriver() {
             localStorage.setItem('driverId', driverId);
             
             showScreen('screen-main');
-            subscribeToNotifications();
+            subscribeToNotifications(deviceId);
             const driverInfo = document.getElementById('driver-info');
             if (driverInfo) {
                 driverInfo.innerHTML = `
@@ -144,8 +160,7 @@ async function registerDriver() {
                     <small>👥 Водителей: ${data.driversCount} (онлайн: ${data.onlineCount || 0})</small>
                 `;
             }
-            loadOrders();
-            //startOrdersAutoRefresh();
+            loadOrders(deviceId);
             
         } catch (error) {
             console.error('Register error:', error);
@@ -161,19 +176,9 @@ async function registerDriver() {
     });
 }
 
-//function startOrdersAutoRefresh() {
-//    if (ordersRefreshInterval) clearInterval(ordersRefreshInterval);
-//    ordersRefreshInterval = setInterval(() => {
-//       const screenMain = document.getElementById('screen-main');
-//        if (screenMain && !screenMain.classList.contains('hidden')) {
-//           loadOrders();
-//        }
-//   }, 5000);
-//}
-
-async function loadOrders() {
+async function loadOrders(deviceId) {
     try {
-        const response = await fetch('/api/driver/orders');
+        const response = await fetch('/api/driver/orders?deviceId=' + deviceId);
         const orders = await response.json();
         
         const container = document.getElementById('orders-list');
@@ -237,6 +242,7 @@ async function submitOffer() {
     const phone = document.getElementById('offer-phone')?.value;
     const modal = document.getElementById('offer-modal');
     const submitBtn = modal?.querySelector('.btn-primary');
+    const deviceId = getDeviceId();
 
     if (!price || !phone) {
         alert('Заполните все поля');
@@ -251,7 +257,8 @@ async function submitOffer() {
                 body: JSON.stringify({
                     orderId: currentOrderId,
                     price: parseInt(price),
-                    phone: phone
+                    phone: phone,
+                    deviceId: deviceId
                 })
             }, 8000);
 
@@ -259,7 +266,7 @@ async function submitOffer() {
 
             alert('✅ Предложение отправлено');
             closeOfferModal();
-            loadOrders();
+            loadOrders(deviceId);
 
         } catch (error) {
             console.error('Offer error:', error);
@@ -278,15 +285,22 @@ async function submitOffer() {
 async function forgetDriver() {
     if (ordersRefreshInterval) clearInterval(ordersRefreshInterval);
     if (confirm('Удалить все данные?')) {
-        await fetch('/api/driver/forget', { method: 'POST' });
+        const deviceId = getDeviceId();
+        await fetch('/api/driver/forget', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deviceId })
+        });
         localStorage.removeItem('driverId');
+        localStorage.removeItem('deviceId');
         window.location.href = '/';
     }
 }
 
 async function restoreDriverSession() {
     try {
-        const response = await fetch('/api/driver/status');
+        const deviceId = getDeviceId();
+        const response = await fetch('/api/driver/status?deviceId=' + deviceId);
         const data = await response.json();
         
         if (data.registered) {
@@ -304,8 +318,7 @@ async function restoreDriverSession() {
                     <small>👥 Загрузка...</small>
                 `;
             }
-            loadOrders();
-            //startOrdersAutoRefresh();
+            loadOrders(deviceId);
         } else {
             showStep('region');
         }
@@ -343,14 +356,13 @@ window.addEventListener('beforeunload', () => {
 // ========== PUSH УВЕДОМЛЕНИЯ ==========
 
 // Подписка на push-уведомления
-async function subscribeToNotifications() {
+async function subscribeToNotifications(deviceId) {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
         console.log('Push не поддерживается');
         return;
     }
     
     try {
-        // Получаем публичный ключ с сервера
         const keyResponse = await fetch('/api/vapid-public-key');
         const keyData = await keyResponse.json();
         
@@ -371,7 +383,8 @@ async function subscribeToNotifications() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 subscription,
-                region: selectedRegion
+                region: selectedRegion,
+                deviceId: deviceId
             })
         });
         
