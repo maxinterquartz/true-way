@@ -184,15 +184,9 @@
             border-left: 4px solid #a3c6e0;
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .step:hover {
-            background: rgba(163, 198, 224, 0.15);
-            transform: translateY(-2px);
         }
         
+        /* На очень маленьких экранах — по одному в ряд */
         @media (max-width: 480px) {
             .step {
                 flex: 1 1 100%;
@@ -230,8 +224,11 @@
         .step .text a {
             color: white;
             text-decoration: none;
-            display: block;
-            width: 100%;
+        }
+        
+        .step .text a:hover {
+            text-decoration: underline;
+            color: #a3c6e0;
         }
         
         .kasco-link {
@@ -245,8 +242,6 @@
             border: 1px solid rgba(252, 63, 29, 0.3);
             transition: 0.2s;
             font-size: 0.95rem;
-            text-decoration: none;
-            color: white;
         }
         
         .kasco-link:hover {
@@ -262,64 +257,201 @@
             color: white;
             width: 20px;
             height: 20px;
-            border-radius: 50%;
+            border-radius: 6px;
             font-weight: 700;
             font-size: 12px;
         }
-
-        /* 🔥 СТИЛИ ДЛЯ ИНДИКАТОРА УМНОГО РЕДИРЕКТА */
-        #landing-loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #1a2632; color: #fff;
-            display: flex; justify-content: center; align-items: center;
-            z-index: 999999; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        
+        .privacy {
+            background: rgba(0,0,0,0.5);
+            padding: 25px 20px;
+            border-radius: 24px;
+            margin: 30px 0;
+            font-size: 1rem;
+            border: 1px dashed #a3c6e0;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
-        #landing-loader.active { opacity: 1; pointer-events: auto; }
-        .landing-spinner {
-            width: 45px; height: 45px;
-            border: 3px solid rgba(255,255,255,0.2); border-top: 3px solid #27a7e7;
-            border-radius: 50%; animation: landing-spin 1s linear infinite;
-            margin: 20px auto;
+        
+        .privacy p {
+            margin: 8px 0;
         }
-        @keyframes landing-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .tg-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #27A7E7;
+            color: white;
+            text-decoration: none;
+            padding: 18px 20px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: clamp(1.2rem, 5vw, 1.6rem);
+            margin: 20px 0 10px;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 15px 30px -8px rgba(39, 167, 231, 0.5);
+            letter-spacing: 1px;
+        }
+        
+        .tg-button:hover {
+            background: #1d8fd1;
+            transform: scale(1.02) translateY(-3px);
+            box-shadow: 0 20px 35px -5px rgba(39, 167, 231, 0.7);
+        }
+        
+        .tg-button svg {
+            width: clamp(24px, 6vw, 32px);
+            height: clamp(24px, 6vw, 32px);
+            fill: white;
+            flex-shrink: 0;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            font-size: clamp(0.9rem, 3.5vw, 1rem);
+            opacity: 0.7;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 25px;
+        }
+        
+        .footer-email {
+            margin-top: 15px;
+            font-size: 1rem;
+            color: #a3c6e0;
+            word-break: break-all;
+        }
+        
+        .footer-email a {
+            color: #a3c6e0;
+            text-decoration: none;
+            border-bottom: 1px dotted #a3c6e0;
+            word-break: break-all;
+        }
+        
+        .hashtag {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            color: #a3c6e0;
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+        
+        .policy-link {
+            margin-top: 20px;
+            border-top: 1px dashed rgba(163, 198, 224, 0.3);
+            padding-top: 15px;
+            word-break: break-word;
+        }
+        
+        .policy-link a {
+            color: #a3c6e0;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            word-break: break-word;
+        }
+        
+        a {
+            color: #a3c6e0;
+        }
+        
+        /* Дополнительная страховка для очень маленьких */
+        @media (max-width: 380px) {
+            .step-content {
+                gap: 8px;
+            }
+            .step .num {
+                font-size: 1.4rem;
+                min-width: 24px;
+            }
+            .step .text {
+                font-size: 0.95rem;
+            }
+            .tg-button {
+                padding: 16px 15px;
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .card {
+                padding: 40px 35px;
+            }
+            .step {
+                flex: 1 1 calc(50% - 15px);
+            }
+        }
     </style>
 </head>
 <body>
-
     <div class="card">
         <div class="domain">true-way.ru</div>
-        <h1>True Way <span>PWA</span></h1>
-        <div class="sub">Круглосуточный сервис заказа персональных водителей</div>
+        <h1>Истинный <span>путь</span></h1>
+        <div class="sub">🔑🚗 трезвый водитель · работает везде</div>
         
         <div class="service-desc">
-            🚐 Перегон авто по всей России. <a class="sber-link" href="https://sberбанк.рф" target="_blank"><span class="sber-logo-small">С</span> СберСтрахование</a>
+            Услуга трезвый водитель — за рулём вашего автомобиля
         </div>
-
-        <!-- СЕТКА КНОПОК С УМНЫМ РЕДИРЕКТОМ -->
+        
+        <figure class="photo-figure">
+            <div class="photo-container">
+                <img src="photo_5233366488985571976_c.jpg" 
+                     alt="Трезвый водитель за рулем автомобиля — услуга трезвый водитель" 
+                     title="Трезвый водитель True Way"
+                     onerror="this.style.display='none'; this.parentElement.style.display='none';">
+            </div>
+            <figcaption class="photo-caption">
+                <span>🎨 Аватар создан</span>
+                <a href="https://rudalle.ru" target="_blank" class="sber-link">
+                    <span class="sber-logo-small">С</span>
+                    ruDALL-E
+                </a>
+                <span>(ПАО Сбербанк)</span>
+            </figcaption>
+        </figure>
+        
         <div class="steps">
-            <div class="step" onclick="goToApp('https://true-way.containerapps.ru/order')">
-                <div class="step-content">
-                    <span class="num">01</span>
-                    <div class="text">Создать заказ<br><small>Вызвать водителя к машине</small></div>
-                </div>
-            </div>
-            <div class="step" onclick="goToApp('https://true-way.containerapps.ru/driver')">
-                <div class="step-content">
-                    <span class="num">02</span>
-                    <div class="text">Панель водителя<br><small>Вход для исполнителей</small></div>
-                </div>
+    <div class="step" onclick="smartRedirect('https://true-way.containerapps.ru/order')">
+        <div class="step-content">
+            <span class="num">1</span>
+            <div class="text">Заполните форму заказа</div>
+        </div>
+    </div>
+    <div class="step" onclick="smartRedirect('https://true-way.containerapps.ru/order')">
+        <div class="step-content">
+            <span class="num">2</span>
+            <div class="text">Выберите лучшую цену</div>
+        </div>
+    </div>
+    <div class="step" onclick="smartRedirect('https://true-way.containerapps.ru/order')">
+        <div class="step-content">
+            <span class="num">3</span>
+            <div class="text">Свяжитесь с водителем</div>
+        </div>
+    </div>
+    <div class="step" onclick="smartRedirect('https://true-way.containerapps.ru/order')">
+        <div class="step-content">
+            <span class="num">4</span>
+            <div class="text">
+                Оформите 
+                <span style="display: inline-flex; align-items: center; gap: 4px; background: rgba(252, 63, 29, 0.1); padding: 4px 10px; border-radius: 30px; border: 1px solid rgba(252, 63, 29, 0.3); text-decoration: none; color: white; margin: 0 2px;">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; background: #FC3F1D; color: white; width: 20px; height: 20px; border-radius: 6px; font-weight: 700; font-size: 12px;">Я</span>
+                    <span>КАСКО</span>
+                </span>
             </div>
         </div>
+    </div>
+</div>
+        
+        <a href="javascript:void(0)" onclick="smartRedirect('https://true-way.containerapps.ru/order')" class="tg-button">
+                  🚀 Поехали
+        </a>
 
-        <!-- ДОПОЛНИТЕЛЬНЫЕ КНОПКИ -->
-        <div style="margin-top: 10px; margin-bottom: 15px;">
-            <a href="javascript:void(0)" onclick="goToApp('https://true-way.containerapps.ru/driver')" class="kasco-link" style="display: inline-flex; align-items: center; gap: 8px;">
-                <span class="yandex-logo">Я</span> 
-                <span>🛡️ Каждая поездка застрахована. Я КАСКО до 5 000 000 ₽</span>
-            </a>
-        </div>
-
+        
         <div class="privacy">
             <p>🔒 Конфиденциальность:</p>
             <p>• Базы данных нет</p>
@@ -346,51 +478,41 @@
         </div>
     </div>
 
-    <!-- HTML-структура спиннера -->
-    <div id="landing-loader">
-        <div style="text-align: center; padding: 20px;">
-            <div class="landing-spinner"></div>
-            <h3 style="margin: 15px 0 5px 0; font-size: 20px; font-weight: 600;">Запускаем приложение...</h3>
-            <p style="margin: 0; color: #8a99a8; font-size: 14px;">Это займет 5–10 секунд, если сервер спал</p>
-        </div>
+    <!-- СПИННЕР ПРИ ЗАГРУЗКЕ КОНТЕЙНЕРА -->
+    <div id="landing-loader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a2632; z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 20px;">
+        <div style="width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid #27a7e7; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <div style="color: white; font-size: 1.2rem;">Запуск сервера...</div>
+        <div style="color: #a3c6e0; font-size: 0.9rem;">Пожалуйста, подождите 5-10 секунд</div>
     </div>
 
-    <!-- ЛОГИКА УМНОГО ПЕРЕХОДА -->
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
     <script>
-        async function goToApp(targetUrl) {
+        function smartRedirect(url) {
             const loader = document.getElementById('landing-loader');
-            if (loader) loader.classList.add('active'); // Включаем крутилку прямо на лендинге
-
-            // Хост контейнера, который мы будем пинговать (корень хелсчека)
-            const containerHost = 'https://true-way.containerapps.ru';
-
-            // Цикл пингования: шлем запросы, пока спящий под не проснется
-            let attempts = 0;
-            const maxAttempts = 15; // ~22 секунды максимум
+            loader.style.display = 'flex';
             
-            while (attempts < maxAttempts) {
-                attempts++;
-                try {
-                    // Вызываем легковесный endpoint /healthz
-                    const response = await fetch(`${containerHost}/healthz`, {
-                        method: 'GET',
-                        mode: 'cors',
-                        cache: 'no-store'
-                    });
-                    
-                    if (response.ok) {
-                        console.log('✅ Контейнер проснулся и ответил! Делаем редирект...');
-                        break; // Сервер готов, выходим из цикла
-                    }
-                } catch (err) {
-                    console.log(`💤 Сервер еще спит, повторный пинг через 1.5 сек... (попытка ${attempts}/${maxAttempts})`);
-                }
-                // Интервал паузы между пингами — 1.5 секунды
-                await new Promise(resolve => setTimeout(resolve, 1500));
-            }
-            
-            // Сервер проснулся и прогрет. Перенаправляем пользователя без белого экрана
-            window.location.href = targetUrl;
+            // Пытаемся разбудить контейнер через healthz
+            fetch('https://true-way.containerapps.ru/healthz', { 
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-store'
+            })
+            .then(() => {
+                // Сервер проснулся (или уже был активен)
+                window.location.href = url;
+            })
+            .catch(() => {
+                // Если ошибка — всё равно редиректим через 2 секунды
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 2000);
+            });
         }
     </script>
 </body>
